@@ -17,7 +17,7 @@ export function formatCommands(
       ];
 
       let line = "";
-      
+
       if (isSubcommand) {
         line = "\n    - " + thisCommand + " " + params + " : " + description;
       } else {

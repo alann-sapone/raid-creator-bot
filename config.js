@@ -5,12 +5,14 @@ const baseConfig = {
   prefix: "rc!"
 };
 
-const configs = {};
+const configs = {
+  events: {}
+};
 
 export function setConfig(guildId, key, value, botClient) {
   if (key && value) {
     if (configs[guildId].hasOwnProperty(key)) {
-        configs[guildId][key] = value;
+      configs[guildId][key] = value;
     } else {
       throw new Error("Invalid item supplied: " + key);
     }
@@ -25,11 +27,12 @@ export function setConfig(guildId, key, value, botClient) {
       )
     );
   }
-  console.log(configs);
 }
 
 export function getConfig(guildId) {
   if (!configs[guildId]) configs[guildId] = { ...baseConfig };
-  console.log(configs);
   return configs[guildId];
 }
+
+// rh!quickCreate event [title][description][channel][dd-MM-yyyy][HH:mm][template#][optional: advanced settings copy pasta]
+// rh!quickCreate event quickCreate event [Titre de l'évènement][Message de description][0][17-02-2020][20:45][1]

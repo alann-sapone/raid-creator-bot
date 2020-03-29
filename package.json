@@ -10,11 +10,15 @@
   "author": "Michiel Mulders",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^11.5.1",
+    "discord.js": "^12.1.1",
     "dotenv": "^8.2.0",
-    "esm": "^3.2.25"
+    "dotenv-parse-variables": "^0.2.3"
   },
   "devDependencies": {
+    "esm": "^3.2.25",
     "nodemon": "^2.0.2"
+  },
+  "events": {
+    "start": "cls || clear"
   }
 }
