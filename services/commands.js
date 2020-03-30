@@ -1,8 +1,9 @@
 import RaidService from "./classes/RaidService";
 import HelpService from "./classes/HelpService";
 import ConfigService from "./classes/ConfigService";
+import CharacterService from "./classes/CharacterService";
 
-export function getCommands () {
+export function getCommands() {
   return {
     raid: {
       service: RaidService,
@@ -35,6 +36,16 @@ export function getCommands () {
     help: {
       service: HelpService,
       description: "Help center to use Raid Creator Bot."
+    },
+    character: {
+      service: CharacterService,
+      commands: {
+        add: {
+          description: "Add a character",
+          params: ""
+        }
+      },
+      description: "Player management."
     }
-  }
-};
+  };
+}
