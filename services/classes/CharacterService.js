@@ -17,7 +17,7 @@ export default class PlayerService {
 
   onClassFetch = async (message, msgEvent, botClient) => {
     await msgEvent.author.send(
-      "Please, enter your specialisation. ie. 21/0/30:"
+      "Please, enter your talent repartition. ie. 21/0/30:"
     );
     pushDiscussion("add", msgEvent.author.id, this.onSpecialisationFetch, {
       class: message
