@@ -1,10 +1,10 @@
-import { roles, classes, specialisations } from "./constant";
+import { roles, classes, talentTrees } from "./constant";
 import { capitalize } from "./helpers/string";
 
 let roster2Composition = {};
 Object.keys(classes).forEach(klass => {
   const name = classes[klass];
-  const klassSpecialisations = specialisations[name];
+  const klassSpecialisations = talentTrees[name];
 
   Object.keys(klassSpecialisations).forEach(specialisationName => {
     const specialisation = klassSpecialisations[specialisationName];

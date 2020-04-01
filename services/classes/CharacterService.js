@@ -1,12 +1,42 @@
+// Helpers
 import { askMany, askYesNo } from "../../helpers/discussion";
+import { capitalize } from "../../helpers/string";
+import { characterValidators } from "../../helpers/validation";
+import { getSpecialisations } from "../../helpers/specialisation";
+
+// Constants
 import { classes } from "../../constant";
 
-// Validation
-import { characterValidators, basicValidators } from "../../helpers/validation";
+import store from "../../store/store";
 
 export default class PlayerService {
+  getFormatYesNo = (characterData, guild) => {
+    let { name, class: cClass, talentTree } = characterData;
+    const className = classes[cClass];
+    const emojiId = store.getState().emojis[guild.id][className];
+    const classIcon = guild.emojis.cache.get(emojiId);
+    const specialisations = getSpecialisations(className, talentTree, false);
+
+    name = capitalize(name);
+    return (
+      `\u200B\n${classIcon} ** ${name} ** (${className})` +
+      `\n${specialisations
+        .map(spec => {
+          const emojiId = store.getState().emojis[guild.id][
+            className + spec.name
+          ];
+          return `\n> ${guild.emojis.cache.get(emojiId)} ${spec.name} (${
+            spec.value
+          })`;
+        })
+        .join("")}
+    \nDo you want to confirm ?`
+    );
+  };
+
   add = async (params, msgEvent, commands, config, botClient) => {
-    const { author } = msgEvent;
+    const { author, guild } = msgEvent;
+
     const questions = [
       {
         answerId: "name",
@@ -20,28 +50,26 @@ export default class PlayerService {
         question:
           "Please, select your class :\n" +
           Object.keys(classes)
-            .map((klass, index) => `${index + 1}. ${classes[klass]}`)
+            .map((klass, index) => `**__${index + 1}__** - ${classes[klass]}`)
             .join("\n"),
         options: { retryOnFail: true },
         validator: characterValidators.validateClass
       },
       {
         answerId: "talentTree",
-        question: "Please, what is your talent tree (i.e: 30/0/21) :",
+        question: "Please, what is your talent tree (i.e: **__30/0/21__**) :",
         options: { retryOnFail: true },
         validator: characterValidators.validateTalentTree
       }
     ];
 
-    let valid = true;
-    try {
-      do {
-        const characterData = await askMany(author, questions);
-        valid = await askYesNo(author, "Are you sure ?");
-        console.log(characterData, valid);
-      } while (!valid);
-    } catch (error) {
-      console.error(error.message);
-    }
+    let characterData;
+    do {
+      characterData = await askMany(author, questions);
+    } while (
+      !(await askYesNo(author, this.getFormatYesNo(characterData, guild)))
+    );
+
+    console.log("Done", characterData);
   };
 }

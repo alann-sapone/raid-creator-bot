@@ -18,7 +18,6 @@ export const ask = async (user, questionData) => {
     if (validator) validatedResult = validator(result);
   } catch (error) {
     await dmChannel.send("Error : " + error.message);
-
     if (options.retryOnFail) return ask(user, questionData);
   }
 
@@ -44,7 +43,7 @@ export const askYesNo = async (user, question) => {
       question +
       "\n" +
       Object.keys(yesNo)
-        .map((answer, index) => `${index + 1}. ${yesNo[answer]}`)
+        .map((answer, index) => `**__${index + 1}__** - ${yesNo[answer]}`)
         .join("\n"),
     options: { retryOnFail: true },
     validator: value => basicValidators.validateArrayPick(yesNo, value)

@@ -19,61 +19,61 @@ export const classes = {
   DRUID: "Druid"
 };
 
-export const specialisations = {};
+export const talentTrees = {};
 
-function addSpecialisation(Class, specialisation, role, userData) {
-  if (!specialisations[Class]) specialisations[Class] = {};
+function addTalentTree(Class, talentTree, role, userData) {
+  if (!talentTrees[Class]) talentTrees[Class] = {};
 
-  if (!specialisations[Class][specialisation])
-    specialisations[Class][specialisation] = {
+  if (!talentTrees[Class][talentTree])
+    talentTrees[Class][talentTree] = {
       role,
       userData: userData || {}
     };
 }
 
 // Warrior
-addSpecialisation(classes.WARRIOR, "Arms", roles.DPS_MELEE_PHYSICAL);
-addSpecialisation(classes.WARRIOR, "Fury", roles.DPS_MELEE_PHYSICAL);
-addSpecialisation(classes.WARRIOR, "Protection", roles.TANK);
+addTalentTree(classes.WARRIOR, "Arms", roles.DPS_MELEE_PHYSICAL);
+addTalentTree(classes.WARRIOR, "Fury", roles.DPS_MELEE_PHYSICAL);
+addTalentTree(classes.WARRIOR, "Protection", roles.TANK);
 
 // Warlock
-addSpecialisation(classes.WARLOCK, "Affliction", roles.DPS_RANGED_MAGICAL);
-addSpecialisation(classes.WARLOCK, "Demonology", roles.DPS_RANGED_MAGICAL);
-addSpecialisation(classes.WARLOCK, "Destruction", roles.DPS_RANGED_MAGICAL);
+addTalentTree(classes.WARLOCK, "Affliction", roles.DPS_RANGED_MAGICAL);
+addTalentTree(classes.WARLOCK, "Demonology", roles.DPS_RANGED_MAGICAL);
+addTalentTree(classes.WARLOCK, "Destruction", roles.DPS_RANGED_MAGICAL);
 
 // Shaman
-addSpecialisation(classes.SHAMAN, "Elemental", roles.DPS_RANGED_MAGICAL);
-addSpecialisation(classes.SHAMAN, "Enhancement", roles.DPS_MELEE_PHYSICAL);
-addSpecialisation(classes.SHAMAN, "Restoration", roles.HEALER);
+addTalentTree(classes.SHAMAN, "Elemental", roles.DPS_RANGED_MAGICAL);
+addTalentTree(classes.SHAMAN, "Enhancement", roles.DPS_MELEE_PHYSICAL);
+addTalentTree(classes.SHAMAN, "Restoration", roles.HEALER);
 
 // Rogue
-addSpecialisation(classes.ROGUE, "Assassination", roles.DPS_MELEE_PHYSICAL);
-addSpecialisation(classes.ROGUE, "Combat", roles.DPS_MELEE_PHYSICAL);
-addSpecialisation(classes.ROGUE, "Subtlety", roles.DPS_MELEE_PHYSICAL);
+addTalentTree(classes.ROGUE, "Assassination", roles.DPS_MELEE_PHYSICAL);
+addTalentTree(classes.ROGUE, "Combat", roles.DPS_MELEE_PHYSICAL);
+addTalentTree(classes.ROGUE, "Subtlety", roles.DPS_MELEE_PHYSICAL);
 
 // Priest
-addSpecialisation(classes.PRIEST, "Discipline", roles.HEALER);
-addSpecialisation(classes.PRIEST, "Holy", roles.HEALER);
-addSpecialisation(classes.PRIEST, "Shadow", roles.DPS_RANGED_MAGICAL);
+addTalentTree(classes.PRIEST, "Discipline", roles.HEALER);
+addTalentTree(classes.PRIEST, "Holy", roles.HEALER);
+addTalentTree(classes.PRIEST, "Shadow", roles.DPS_RANGED_MAGICAL);
 
 // Paladin
-addSpecialisation(classes.PALADIN, "Holy", roles.HEALER);
-addSpecialisation(classes.PALADIN, "Protection", roles.TANK);
-addSpecialisation(classes.PALADIN, "Retribution", roles.DPS_MELEE_PHYSICAL);
+addTalentTree(classes.PALADIN, "Holy", roles.HEALER);
+addTalentTree(classes.PALADIN, "Protection", roles.TANK);
+addTalentTree(classes.PALADIN, "Retribution", roles.DPS_MELEE_PHYSICAL);
 
 // Mage
-addSpecialisation(classes.MAGE, "Arcane", roles.DPS_RANGED_MAGICAL);
-addSpecialisation(classes.MAGE, "Fire", roles.DPS_RANGED_MAGICAL);
-addSpecialisation(classes.MAGE, "Frost", roles.DPS_RANGED_MAGICAL);
+addTalentTree(classes.MAGE, "Arcane", roles.DPS_RANGED_MAGICAL);
+addTalentTree(classes.MAGE, "Fire", roles.DPS_RANGED_MAGICAL);
+addTalentTree(classes.MAGE, "Frost", roles.DPS_RANGED_MAGICAL);
 
 // Hunter
-addSpecialisation(classes.HUNTER, "Beast mastery", roles.DPS_RANGED_PHYSICAL);
-addSpecialisation(classes.HUNTER, "Marksmanship", roles.DPS_RANGED_PHYSICAL);
-addSpecialisation(classes.HUNTER, "Survival", roles.DPS_RANGED_PHYSICAL);
+addTalentTree(classes.HUNTER, "Beast mastery", roles.DPS_RANGED_PHYSICAL);
+addTalentTree(classes.HUNTER, "Marksmanship", roles.DPS_RANGED_PHYSICAL);
+addTalentTree(classes.HUNTER, "Survival", roles.DPS_RANGED_PHYSICAL);
 
 // Druid
-addSpecialisation(classes.DRUID, "Balance", roles.DPS_RANGED_MAGICAL);
-addSpecialisation(classes.DRUID, "Feral combat", roles.DPS_MELEE_PHYSICAL, {
+addTalentTree(classes.DRUID, "Balance", roles.DPS_RANGED_MAGICAL);
+addTalentTree(classes.DRUID, "Feral combat", roles.DPS_MELEE_PHYSICAL, {
   isTank: null
 });
-addSpecialisation(classes.DRUID, "Restoration", roles.HEALER);
+addTalentTree(classes.DRUID, "Restoration", roles.HEALER);

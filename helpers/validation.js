@@ -34,8 +34,8 @@ const validateTalentTree = talentTree => {
   }
 
   let total = 0;
-  tree.forEach(treeValueString => {
-    const treeValue = parseInt(treeValueString);
+  const mappedString = tree.map(treeValueString => parseInt(treeValueString));
+  mappedString.forEach(treeValue => {
     if (isNaN(treeValue)) {
       throw new Error("Invalid talent value. Please verify your input");
     } else {
@@ -49,7 +49,7 @@ const validateTalentTree = talentTree => {
     }
   });
 
-  return tree;
+  return mappedString;
 };
 
 export const characterValidators = {

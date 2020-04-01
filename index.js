@@ -4,6 +4,9 @@ import { formatCommands } from "./helpers/commandFormater";
 import { getEnv } from "./helpers/env";
 import { getCommands } from "./services/commands";
 
+import store from "./store/store";
+import { add } from "./store/actions/emojisActions";
+
 const Discord = require("discord.js");
 const bot = new Discord.Client();
 const TOKEN = getEnv().TOKEN;
@@ -13,6 +16,14 @@ bot.login(TOKEN);
 bot.on("ready", async () => {
   bot.user.setPresence({ game: { name: "!help" } });
   console.log(`${bot.user.username} is up and running!`);
+
+  // Store guild emojis by names
+  bot.guilds.cache.forEach(guild => {
+    const emojis = guild.emojis.cache;
+    emojis.forEach(emoji => {
+      store.dispatch(add(guild.id, emoji.id, emoji.name));
+    });
+  });
 
   // While dev mode is on, auto clean + restart command to itself
   if (getEnv().DEV_MODE) {
