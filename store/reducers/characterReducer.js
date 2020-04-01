@@ -1,26 +1,27 @@
 import { types } from "../actions/characterActions";
+import produce from "immer";
 
-const initialState = {
-    characters = {}
-}
+const initialState = {};
 
-function characterReducer(state = initialState, action) {
-    const { type, serverId, characterData } = action;
-    switch (type) {
-        case types.CHARACTER_ADD:
-            console.log(type, state, type, serverId, characterData);
-            return state;
-            
-        case types.CHARACTER_EDIT:
-            console.log(type, state, type, serverId, characterData);
-            return state;
-            
-        case types.CHARACTER_REMOVE:
-            console.log(type, state, type, serverId, characterData);
-            return state;
-    
-        default:
-            console.log("Default");
-            return state;
-    }
+export default function characterReducer(state = initialState, action) {
+  const { type, authorId, characterData } = action;
+  switch (type) {
+    case types.CHARACTER_ADD:
+      const nextState = produce(state, draftState => {
+        if (!state[authorId]) draftState[authorId] = [];
+        draftState[authorId].push(characterData);
+      });
+
+      console.log(state, nextState);
+      return nextState;
+
+    case types.CHARACTER_EDIT:
+      return state;
+
+    case types.CHARACTER_REMOVE:
+      return state;
+
+    default:
+      return state;
+  }
 }

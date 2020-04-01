@@ -13,7 +13,9 @@
     "discord.js": "^12.1.1",
     "dotenv": "^8.2.0",
     "dotenv-parse-variables": "^0.2.3",
-    "redux": "^4.0.5"
+    "immer": "^6.0.2",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "esm": "^3.2.25",

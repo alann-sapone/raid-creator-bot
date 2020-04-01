@@ -3,7 +3,6 @@ import { getConfig } from "./config";
 import { formatCommands } from "./helpers/commandFormater";
 import { getEnv } from "./helpers/env";
 import { getCommands } from "./services/commands";
-import { getDiscussion } from "./discussion";
 
 const Discord = require("discord.js");
 const bot = new Discord.Client();
@@ -55,23 +54,6 @@ bot.on("message", async msgEvent => {
           }
         } else {
           msgEvent.reply(formatCommands(getCommands(), prefix));
-        }
-      }
-    } else {
-      // MP
-      const { author } = msgEvent;
-      const discussion = getDiscussion(author.id);
-
-      if (discussion) {
-        const lastDiscussionHandler =
-          discussion.stack[discussion.stack.length - 1];
-
-        if (lastDiscussionHandler) {
-          try {
-            lastDiscussionHandler(msgEvent.content, msgEvent, bot);
-          } catch (error) {
-            console.error(error)
-          }
         }
       }
     }

@@ -10,26 +10,26 @@ export const types = {
 /*
  * Actions Creator
  */
-export const add = (serverId, characterData) => {
+export const add = (authorId, characterData) => {
   return {
     type: types.CHARACTER_ADD,
-    serverId,
+    authorId,
     characterData
   };
 };
 
-export const remove = (serverId, characterData) => {
+export const remove = (authorId, characterData) => {
   return {
     type: types.CHARACTER_REMOVE,
-    serverId,
+    authorId,
     characterData
   };
 };
 
-export const edit = (serverId, characterData) => {
+export const edit = (authorId, characterData) => {
   return {
     type: types.CHARACTER_EDIT,
-    serverId,
+    authorId,
     characterData
   };
 };
