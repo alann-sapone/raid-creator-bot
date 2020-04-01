@@ -1,16 +1,14 @@
 import { basicValidators } from "./validation";
 
-export const ask = async (user, questionData) => {
+export const ask = async (dmChannel, questionData) => {
   const { question, options, validator } = questionData;
-
-  const dmChannel = await user.createDM();
   await dmChannel.send(question);
 
   const message = await dmChannel.awaitMessages(() => true, { max: 1 });
   const result = message.first().content;
   let validatedResult = null;
 
-  if (message === "cancel") {
+  if (result === "!cancel") {
     throw new Error("Canceled");
   }
 
@@ -18,18 +16,28 @@ export const ask = async (user, questionData) => {
     if (validator) validatedResult = validator(result);
   } catch (error) {
     await dmChannel.send("Error : " + error.message);
-    if (options.retryOnFail) return ask(user, questionData);
+    if (options.retryOnFail) return ask(dmChannel, questionData);
   }
 
   return validatedResult ? validatedResult : result;
 };
 
-export const askMany = async (user, questions) => {
+export const askMany = async (dmChannel, questions, title) => {
   const results = {};
+
+  let content = "";
+  const intro = '\n*You can type "!cancel" at any time to stop this process.*';
+
+  title && (content += `**${title}**`);
+  content += intro;
+  (intro || title) && (content += "\n\u200B");
+  content.length > 0 && dmChannel.send(content);
+
   for (const questionData of questions) {
     const { answerId, ...otherQuestionData } = questionData;
-    results[answerId] = await ask(user, otherQuestionData);
+    results[answerId] = await ask(dmChannel, otherQuestionData);
   }
+
   return results;
 };
 
@@ -37,8 +45,8 @@ const yesNo = {
   YES: "Yes",
   NO: "No"
 };
-export const askYesNo = async (user, question) => {
-  const result = await ask(user, {
+export const askYesNo = async (dmChannel, question) => {
+  const result = await ask(dmChannel, {
     question:
       question +
       "\n" +

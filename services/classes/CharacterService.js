@@ -1,6 +1,5 @@
 // Helpers
 import { askMany, askYesNo } from "../../helpers/discussion";
-import { capitalize } from "../../helpers/string";
 import { characterValidators } from "../../helpers/validation";
 import { getSpecialisations } from "../../helpers/specialisation";
 
@@ -17,7 +16,6 @@ export default class PlayerService {
     const classIcon = guild.emojis.cache.get(emojiId);
     const specialisations = getSpecialisations(className, talentTree, false);
 
-    name = capitalize(name);
     return (
       `\u200B\n${classIcon} ** ${name} ** (${className})` +
       `\n${specialisations
@@ -30,12 +28,13 @@ export default class PlayerService {
           })`;
         })
         .join("")}
-    \nDo you want to confirm ?`
+    \nAre the provided informations valid ?`
     );
   };
 
   add = async (params, msgEvent, commands, config, botClient) => {
     const { author, guild } = msgEvent;
+    const dmChannel = await author.createDM();
 
     const questions = [
       {
@@ -64,11 +63,20 @@ export default class PlayerService {
     ];
 
     let characterData;
-    do {
-      characterData = await askMany(author, questions);
-    } while (
-      !(await askYesNo(author, this.getFormatYesNo(characterData, guild)))
-    );
+    try {
+      do {
+        characterData = await askMany(
+          dmChannel,
+          questions,
+          "Add a character to your profile"
+        );
+      } while (
+        !(await askYesNo(dmChannel, this.getFormatYesNo(characterData, guild)))
+      );
+    } catch (error) {
+      await dmChannel.send(error.message);
+      return;
+    }
 
     console.log("Done", characterData);
   };
