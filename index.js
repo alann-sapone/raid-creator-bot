@@ -8,13 +8,19 @@ import store from "./store/store";
 import { add } from "./store/actions/emojisActions";
 
 const Discord = require("discord.js");
-const bot = new Discord.Client();
+const bot = new Discord.Client({
+  presence: {
+    activity: {
+      name: "!help",
+      type: "LISTENING"
+    }
+  }
+});
 const TOKEN = getEnv().TOKEN;
 
 bot.login(TOKEN);
 
 bot.on("ready", async () => {
-  bot.user.setPresence({ game: { name: "!help" } });
   console.log(`${bot.user.username} is up and running!`);
 
   // Store guild emojis by names

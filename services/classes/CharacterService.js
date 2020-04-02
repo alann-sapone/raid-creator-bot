@@ -4,7 +4,7 @@ import { characterValidators } from "../../helpers/validation";
 import { getSpecialisations } from "../../helpers/specialisation";
 
 // Constants
-import { classes } from "../../constant";
+import { classes, factions } from "../../constant";
 
 import store from "../../store/store";
 
@@ -37,6 +37,18 @@ export default class PlayerService {
     const dmChannel = await author.createDM();
 
     const questions = [
+      {
+        answerId: "faction",
+        question:
+          "Please, select your faction :\n" +
+          Object.keys(factions)
+            .map(
+              (faction, index) => `**__${index + 1}__** - ${factions[faction]}`
+            )
+            .join("\n"),
+        options: { retryOnFail: true },
+        validator: characterValidators.validateFaction
+      },
       {
         answerId: "name",
         question:

@@ -1,3 +1,8 @@
+export const factions = {
+  HORDE: "Horde",
+  ALLIANCE: "Alliance"
+};
+
 export const roles = {
   TANK: "TANK",
   HEALER: "HEALER",

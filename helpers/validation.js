@@ -1,4 +1,4 @@
-import { classes } from "../constant";
+import { classes, factions } from "../constant";
 import { capitalize } from "./string";
 import CommandError from "../errors/CommandError";
 
@@ -59,10 +59,15 @@ const validateTalentTree = talentTree => {
   return mappedString;
 };
 
+const validateFaction = indexPlusOne => {
+  return validateArrayPick(factions, indexPlusOne);
+};
+
 export const characterValidators = {
   validateName,
   validateClass,
-  validateTalentTree
+  validateTalentTree,
+  validateFaction
 };
 
 export const basicValidators = {
