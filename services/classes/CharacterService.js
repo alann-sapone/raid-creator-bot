@@ -10,14 +10,15 @@ import store from "../../store/store";
 
 export default class PlayerService {
   getFormatYesNo = (characterData, guild) => {
-    let { name, class: cClass, talentTree } = characterData;
+    let { name, class: cClass, faction, talentTree } = characterData;
     const className = classes[cClass];
+    const factionName = factions[faction];
     const emojiId = store.getState().emojis[guild.id][className];
     const classIcon = guild.emojis.cache.get(emojiId);
     const specialisations = getSpecialisations(className, talentTree, false);
 
     return (
-      `\u200B\n${classIcon} ** ${name} ** (${className})` +
+      `\u200B\n${classIcon} ** ${name} ** (${className} - ${factionName})` +
       `\n${specialisations
         .map(spec => {
           const emojiId = store.getState().emojis[guild.id][

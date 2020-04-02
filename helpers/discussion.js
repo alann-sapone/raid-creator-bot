@@ -31,7 +31,9 @@ export const askMany = async (dmChannel, questions, title) => {
   title && (content += `**${title}**`);
   content += intro;
   (intro || title) && (content += "\n\u200B");
-  content.length > 0 && dmChannel.send(content);
+
+  if (questions[0] && content.length > 0)
+    questions[0].question = content + "\n" + questions[0].question;
 
   for (const questionData of questions) {
     const { answerId, ...otherQuestionData } = questionData;
