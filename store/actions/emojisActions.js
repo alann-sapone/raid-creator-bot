@@ -8,11 +8,11 @@ export const types = {
 /*
  * Actions Creator
  */
-export const add = (guildId, id, name) => {
+export const add = (guildId, name, emoji) => {
   return {
     type: types.EMOJI_ADD,
     guildId,
-    id,
-    name
+    name,
+    emoji
   };
 };

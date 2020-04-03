@@ -6,7 +6,9 @@ import { getCommands } from "./services/commands";
 
 import store from "./store/store";
 import { add } from "./store/actions/emojisActions";
-import { add as charAdd } from "./store/actions/characterActions";
+
+// Fixtures
+import { installFixtures } from "./fixtures";
 
 const Discord = require("discord.js");
 const bot = new Discord.Client({
@@ -24,11 +26,15 @@ bot.login(TOKEN);
 bot.on("ready", async () => {
   console.log(`${bot.user.username} is up and running!`);
 
+  // Install fixtures
+  installFixtures("692550662642335894", "322289625504940032");
+
   // Store guild emojis by names
   bot.guilds.cache.forEach(guild => {
-    const emojis = guild.emojis.cache;
-    emojis.forEach(emoji => {
-      store.dispatch(add(guild.id, emoji.id, emoji.name));
+    const emojisCache = guild.emojis.cache;
+    emojisCache.forEach(emojiData => {
+      const emoji = emojisCache.get(emojiData.id)
+      store.dispatch(add(guild.id, emojiData.name, emoji));
     });
   });
 
@@ -44,41 +50,12 @@ bot.on("ready", async () => {
       });
     });
     
-    await channelGeneral.send(getEnv().DEV_AUTOMATIC_COMMAND);
-
-    const characterDataA = {
-      faction: 'HORDE',
-      name: 'Akryptik',
-      class: 'WARLOCK',
-      talentTree: [ 0, 0, 0 ]
-    }
-    const characterDataB = {
-      faction: 'HORDE',
-      name: 'Queudbelette',
-      class: 'WARRIOR',
-      talentTree: [ 21, 30, 0 ]
-    }
-    const characterDataC = {
-      faction: 'HORDE',
-      name: 'Akryptik',
-      class: 'WARLOCK',
-      talentTree: [ 0, 30, 21 ]
-    }
-    const characterDataD = {
-      faction: 'ALLIANCE',
-      name: 'Akryptik',
-      class: 'ROGUE',
-      talentTree: [ 30, 0, 21 ]
-    }
-    store.dispatch(charAdd("692550662642335894", "322289625504940032", characterDataA));
-    store.dispatch(charAdd("692550662642335894", "322289625504940032", characterDataB));
-    store.dispatch(charAdd("692550662642335894", "322289625504940032", characterDataC));
-    store.dispatch(charAdd("692550662642335894", "322289625504940032", characterDataD));
+    await channelGeneral.send(getEnv().DEV_AUTOMATIC_COMMAND);    
   }
 });
 
 bot.on("message", async msgEvent => {
-  if (!msgEvent.author.bot) {
+  if (!msgEvent.author.bot || getEnv().DEV_MODE) {
     const [origCommand, ...params] = msgEvent.content.split(" ");
 
     // In guild
