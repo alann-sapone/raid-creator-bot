@@ -1,4 +1,4 @@
-import { talentTrees } from "../constant";
+import { talentTrees } from "../../constant";
 
 export const getSpecialisations = (
   className,

@@ -37,17 +37,30 @@ export const askMany = async (dmChannel, questions, title) => {
 
   for (const questionData of questions) {
     const { answerId, ...otherQuestionData } = questionData;
-    results[answerId] = await ask(dmChannel, otherQuestionData);
+    const { interpolate } = otherQuestionData;
+
+    // Check if question is needed or if we can get answer from current results
+    let interpolatedResult = null;
+    if (interpolate) {
+      interpolatedResult = interpolate(results);
+    }
+
+    if (interpolatedResult) {
+      results[answerId] = interpolatedResult[answerId];
+    } else {
+      results[answerId] = await ask(dmChannel, otherQuestionData);
+    }
   }
 
   return results;
 };
 
-const yesNo = {
-  YES: "Yes",
-  NO: "No"
-};
 export const askYesNo = async (dmChannel, question) => {
+  const yesNo = {
+    YES: "Yes",
+    NO: "No"
+  };
+
   const result = await ask(dmChannel, {
     question:
       question +

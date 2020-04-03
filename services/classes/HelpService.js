@@ -1,5 +1,5 @@
 import { getCommands } from "../commands";
-import { formatCommands } from "../../helpers/commandFormater";
+import { formatCommands } from "../../helpers/formaters/commandFormater";
 
 export default class Help {
   constructor(msgEvent, commands, config, botClient) {

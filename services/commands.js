@@ -41,8 +41,15 @@ export function getCommands() {
       service: CharacterService,
       commands: {
         add: {
-          description: "Add a character",
+          description: "Add a character to this server",
           params: ""
+        },
+        remove: {
+          description: "Remove a character from this server",
+          params: ""
+        },
+        list: {
+          description: "List your characters from this server"
         }
       },
       description: "Player management."

@@ -1,3 +1,1 @@
-import BotError from "./BotError";
-
-export default class CommandError extends BotError {}
+export default class CommandError  {}

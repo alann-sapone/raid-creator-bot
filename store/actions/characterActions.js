@@ -4,32 +4,25 @@
 export const types = {
   CHARACTER_ADD: "CHARACTER_ADD",
   CHARACTER_REMOVE: "CHARACTER_REMOVE",
-  CHARACTER_EDIT: "CHARACTER_EDIT"
 };
 
 /*
  * Actions Creator
  */
-export const add = (authorId, characterData) => {
+export const add = (guildId, authorId, characterData) => {
   return {
     type: types.CHARACTER_ADD,
+    guildId,
     authorId,
     characterData
   };
 };
 
-export const remove = (authorId, characterData) => {
+export const remove = (guildId, authorId, flattenedCharacter) => {
   return {
     type: types.CHARACTER_REMOVE,
+    guildId,
     authorId,
-    characterData
-  };
-};
-
-export const edit = (authorId, characterData) => {
-  return {
-    type: types.CHARACTER_EDIT,
-    authorId,
-    characterData
+    flattenedCharacter
   };
 };

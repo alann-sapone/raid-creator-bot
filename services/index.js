@@ -1,6 +1,6 @@
 import { getConfig } from "../config";
 import { getCommands } from "./commands";
-import { formatCommands } from "../helpers/commandFormater";
+import { formatCommands } from "../helpers/formaters/commandFormater";
 
 export function runService(command, origParams, msgEvent, botClient) {
   const guildId = msgEvent.guild.id;

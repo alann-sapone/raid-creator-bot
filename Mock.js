@@ -1,5 +1,5 @@
 import { roles, classes, talentTrees } from "./constant";
-import { capitalize } from "./helpers/string";
+import { capitalize } from "./helpers/prototypes/string";
 
 let roster2Composition = {};
 Object.keys(classes).forEach(klass => {
@@ -7,9 +7,7 @@ Object.keys(classes).forEach(klass => {
   const klassSpecialisations = talentTrees[name];
 
   Object.keys(klassSpecialisations).forEach(specialisationName => {
-    const specialisation = klassSpecialisations[specialisationName];
     const mergedName = capitalize(name) + capitalize(specialisationName);
-    //console.log(name, specialisationName, icon);
     roster2Composition[mergedName] = {};
   });
 });

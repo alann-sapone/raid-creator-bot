@@ -1,4 +1,4 @@
-import { formatCommands } from "./helpers/commandFormater";
+import { formatCommands } from "./helpers/formaters/commandFormater";
 import { getCommands } from "./services/commands";
 
 const baseConfig = {

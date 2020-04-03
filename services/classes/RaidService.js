@@ -1,5 +1,5 @@
 import { eventsSources, realData } from "../../Mock";
-import { embedFormater } from "../../helpers/embedFormater";
+import { embedFormater } from "../../helpers/formaters/embedFormater";
 const Discord = require("discord.js");
 
 export default class RaidService {

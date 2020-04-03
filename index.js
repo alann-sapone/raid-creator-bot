@@ -1,11 +1,12 @@
 import { runService } from "./services";
 import { getConfig } from "./config";
-import { formatCommands } from "./helpers/commandFormater";
+import { formatCommands } from "./helpers/formaters/commandFormater";
 import { getEnv } from "./helpers/env";
 import { getCommands } from "./services/commands";
 
 import store from "./store/store";
 import { add } from "./store/actions/emojisActions";
+import { add as charAdd } from "./store/actions/characterActions";
 
 const Discord = require("discord.js");
 const bot = new Discord.Client({
@@ -42,7 +43,37 @@ bot.on("ready", async () => {
         await message.delete();
       });
     });
-    // await channelGeneral.send(getEnv().DEV_AUTOMATIC_COMMAND);
+    
+    await channelGeneral.send(getEnv().DEV_AUTOMATIC_COMMAND);
+
+    const characterDataA = {
+      faction: 'HORDE',
+      name: 'Akryptik',
+      class: 'WARLOCK',
+      talentTree: [ 0, 0, 0 ]
+    }
+    const characterDataB = {
+      faction: 'HORDE',
+      name: 'Queudbelette',
+      class: 'WARRIOR',
+      talentTree: [ 21, 30, 0 ]
+    }
+    const characterDataC = {
+      faction: 'HORDE',
+      name: 'Akryptik',
+      class: 'WARLOCK',
+      talentTree: [ 0, 30, 21 ]
+    }
+    const characterDataD = {
+      faction: 'ALLIANCE',
+      name: 'Akryptik',
+      class: 'ROGUE',
+      talentTree: [ 30, 0, 21 ]
+    }
+    store.dispatch(charAdd("692550662642335894", "322289625504940032", characterDataA));
+    store.dispatch(charAdd("692550662642335894", "322289625504940032", characterDataB));
+    store.dispatch(charAdd("692550662642335894", "322289625504940032", characterDataC));
+    store.dispatch(charAdd("692550662642335894", "322289625504940032", characterDataD));
   }
 });
 
