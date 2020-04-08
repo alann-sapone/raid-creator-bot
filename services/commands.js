@@ -49,7 +49,8 @@ export function getCommands() {
           params: ""
         },
         list: {
-          description: "List your characters from this server"
+          description: "List your characters from this server",
+          params: ""
         }
       },
       description: "Player management."

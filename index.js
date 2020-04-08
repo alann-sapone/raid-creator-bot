@@ -20,7 +20,6 @@ const bot = new Discord.Client({
   }
 });
 const TOKEN = getEnv().TOKEN;
-
 bot.login(TOKEN);
 
 bot.on("ready", async () => {
