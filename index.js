@@ -84,3 +84,14 @@ bot.on("message", async msgEvent => {
     }
   }
 });
+
+bot.on("messageReactionAdd", async msgEvent => {
+  const { message, users } = msgEvent;
+  const { id } = message;
+  
+  users.cache.forEach(user => {
+    if (!user.bot) {
+      console.log(user);
+    }
+  });
+})
