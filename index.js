@@ -12,6 +12,7 @@ import { init as configInit } from "./store/actions/configActions";
 // Helpers
 import { parseCommand, getCommands } from "./helpers/command";
 import { formatServices, formatService, formatCommand } from "./helpers/formaters/commandFormater";
+import { getParams } from "./helpers/command";
 
 // Errors
 import UnknownCommand from "./errors/UnknownCommand";
@@ -94,14 +95,16 @@ bot.on("message", async (msgEvent) => {
           const { service, commands, args } = parseCommand(content, prefix);
           const [ command ] = commands
 
+          let serviceCommand;
           try {
             const serviceInstance = services["message"][service];
             if (!serviceInstance) throw new UnknownCommand();
 
-            const serviceCommand = serviceInstance[command] || serviceInstance["default"];
+            serviceCommand = serviceInstance[command] || serviceInstance["default"];
             if (!serviceCommand) throw new UnknownArgument();
-
-            if (serviceCommand.callback(args, msgEvent, commands, config, bot))
+            
+            const validatedArgs = getParams(serviceCommand.params, args);
+            if (serviceCommand.callback(validatedArgs, msgEvent, commands, config, bot))
               msgEvent.delete();
           } catch (e) {
             if (e instanceof UnknownCommand) {
@@ -122,7 +125,7 @@ bot.on("message", async (msgEvent) => {
               ));
             } else if (e instanceof ParameterError) {
               msgEvent.reply(formatCommand(
-                prefix, service, command, services.message[service][command].params,
+                prefix, service, command, serviceCommand.params,
                 `\n:warning: ${e.message}\n\n`
               ))
             } else {

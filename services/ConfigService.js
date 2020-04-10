@@ -12,7 +12,7 @@ import { getParams } from "../helpers/command";
 export default class ConfigService extends BaseService {
   set = (params, msgEvent, commands, config, botClient) => {
     const guildId = msgEvent.guild.id;
-    const { key, value } = getParams(this, "set", params);
+    const { key, value } = params;
 
     store.dispatch(add(guildId, key, value));
     msgEvent.reply(`Setting **"${key}"** has now value **"${value}"**`);

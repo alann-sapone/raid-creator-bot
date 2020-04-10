@@ -24,11 +24,10 @@ export const getCommands = () => {
   return services['message'];
 }
 
-export const getParams = (instance, commandName, givenCommands) => {
-  const commandParams = instance.getEventInterface().message[commandName].params
-  
+export const getParams = (params, givenCommands) => {
+ 
   const validated = {};
-  commandParams.forEach((command, index) => {
+  params.forEach((command, index) => {
     const givenValue = givenCommands[index];
     if ((givenValue === undefined || givenValue === null) && !command.optional) {
       throw new ParameterError(`The parameter **${command.name}** is not optional`);
