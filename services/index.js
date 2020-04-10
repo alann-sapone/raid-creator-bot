@@ -5,12 +5,14 @@ import CharacterService from "./CharacterService";
 import ConfigService from "./ConfigService";
 import HelpService from "./HelpService";
 import RaidService from "./RaidService";
+import RosterService from "./RosterService";
 
 const services = {
   character: new CharacterService(),
   config: new ConfigService(),
   help: new HelpService(),
   raid: new RaidService(),
+  roster: new RosterService()
 };
 
 // Connect services to events

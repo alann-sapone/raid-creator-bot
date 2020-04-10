@@ -80,13 +80,13 @@ export default class RaidService extends BaseService{
     this.addReactions(sentMessage);
   };
 
-  onReactionAdded = (bot, msgEvent, user) => {
+  onReactionAdded = async (bot, msgEvent, user) => {
     if (!user.bot) {
       console.log("Raid service, new user inscription : ", user.id);
     }
   }
   
-  onReactionRemoved = (bot, msgEvent, user) => {
+  onReactionRemoved = async (bot, msgEvent, user) => {
     if (!user.bot) {
       console.log("Raid service, remove user inscription : ", user.id);
     }

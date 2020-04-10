@@ -10,8 +10,7 @@ import { add as emojiAdd } from "./store/actions/emojisActions";
 import { init as configInit } from "./store/actions/configActions";
 
 // Helpers
-import { parseCommand, getCommands } from "./helpers/command";
-import { formatServices, formatService, formatCommand } from "./helpers/formaters/commandFormater";
+import { parseCommand } from "./helpers/command";
 import { getParams } from "./helpers/command";
 
 // Errors
@@ -55,6 +54,7 @@ bot.on("ready", async () => {
 
     // Initiate guild data
     store.dispatch(configInit(guildId));
+    // TODO : get persisted guild data
   });
 
   // While dev mode is on, auto clean + restart command to itself
@@ -63,10 +63,9 @@ bot.on("ready", async () => {
       getEnv().DEV_CHANNEL_ID,
       true
     );
-    channelGeneral.messages.fetch().then((messages) => {
-      messages.forEach(async (message) => {
-        await message.delete();
-      });
+    const messages = await channelGeneral.messages.fetch()
+    messages.forEach(async (message) => {
+      await message.delete();
     });
 
     await channelGeneral.send(getEnv().DEV_AUTOMATIC_COMMAND);
@@ -97,37 +96,28 @@ bot.on("message", async (msgEvent) => {
 
           let serviceCommand;
           try {
+            // Get Service
             const serviceInstance = services["message"][service];
             if (!serviceInstance) throw new UnknownCommand();
 
+            // Get Service command
             serviceCommand = serviceInstance[command] || serviceInstance["default"];
             if (!serviceCommand) throw new UnknownArgument();
             
+            // Validate arguments
             const validatedArgs = getParams(serviceCommand.params, args);
-            if (serviceCommand.callback(validatedArgs, msgEvent, commands, config, bot))
+
+            // All good
+            if (await serviceCommand.callback(validatedArgs, msgEvent, commands, config, bot)) {
               msgEvent.delete();
+            }
           } catch (e) {
             if (e instanceof UnknownCommand) {
-              msgEvent.reply(formatServices(
-                prefix,
-                getCommands(),
-                `:warning: **Unknown Command : "__${prefix + service}__"**\n\n`)
-              );
+              msgEvent.reply(e.format(prefix, service));
             } else if (e instanceof UnknownArgument) {
-              msgEvent.reply(formatService(
-                prefix,
-                service,
-                getCommands()[service],
-                "\n" + (command === "help" ? 
-                  `**Commands for "__${prefix + service}__": **` :
-                  `:warning: **Invalid Command : "__${prefix + service} ${command}__"**`
-                ) + "\n\n"
-              ));
+              msgEvent.reply(e.format(prefix, service, command));
             } else if (e instanceof ParameterError) {
-              msgEvent.reply(formatCommand(
-                prefix, service, command, serviceCommand.params,
-                `\n:warning: ${e.message}\n\n`
-              ))
+              msgEvent.reply(e.format(prefix, service, command, serviceCommand))
             } else {
               msgEvent.reply(e.message);
             }
