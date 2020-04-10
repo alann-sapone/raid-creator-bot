@@ -1,1 +1,1 @@
-export default class CommandError  {}
+export default class CommandError extends Error {}

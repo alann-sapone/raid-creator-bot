@@ -1,21 +1,22 @@
 // Env
 import { getEnv } from "./helpers/env";
-import { getConfig } from "./config";
 
 // Services
 import services from "./services";
 
 // Store
 import store from "./store/store";
-import { add } from "./store/actions/emojisActions";
+import { add as emojiAdd } from "./store/actions/emojisActions";
+import { init as configInit } from "./store/actions/configActions";
 
 // Helpers
 import { parseCommand, getCommands } from "./helpers/command";
-import { formatServices, formatService } from "./helpers/formaters/commandFormater";
+import { formatServices, formatService, formatCommand } from "./helpers/formaters/commandFormater";
 
 // Errors
 import UnknownCommand from "./errors/UnknownCommand";
 import UnknownArgument from "./errors/UnknownArgument";
+import ParameterError from "./errors/ParameterError";
 
 // Fixtures
 import { installFixtures } from "./fixtures";
@@ -41,13 +42,18 @@ bot.on("ready", async () => {
   // Install fixtures
   installFixtures("692550662642335894", "322289625504940032");
 
-  // Store guild emojis by names
   bot.guilds.cache.forEach((guild) => {
+    const guildId = guild.id;
+
+    // Store guild emojis by names
     const emojisCache = guild.emojis.cache;
     emojisCache.forEach((emojiData) => {
       const emoji = emojisCache.get(emojiData.id);
-      store.dispatch(add(guild.id, emojiData.name, emoji));
+      store.dispatch(emojiAdd(guildId, emojiData.name, emoji));
     });
+
+    // Initiate guild data
+    store.dispatch(configInit(guildId));
   });
 
   // While dev mode is on, auto clean + restart command to itself
@@ -75,11 +81,13 @@ bot.on("message", async (msgEvent) => {
     if (msgEvent.guild) {
       const { content, guild } = msgEvent;
       const { id: guildId } = guild;
-      const { prefix } = getConfig(guildId);
+      
+      const config = store.getState().configuration[guildId];
+      const { prefix } = config;
 
       // Help command without prefix
       if (content.startsWith("!help")) {
-        services.message.help.default.callback([], msgEvent, [], getConfig(guildId), bot);
+        services.message.help.default.callback([], msgEvent, [], config, bot);
       } else {
         // Any other prefixed command
         if (content.startsWith(prefix)) {
@@ -93,7 +101,8 @@ bot.on("message", async (msgEvent) => {
             const serviceCommand = serviceInstance[command] || serviceInstance["default"];
             if (!serviceCommand) throw new UnknownArgument();
 
-            serviceCommand.callback(args, msgEvent, commands, getConfig(guildId), bot);
+            if (serviceCommand.callback(args, msgEvent, commands, config, bot))
+              msgEvent.delete();
           } catch (e) {
             if (e instanceof UnknownCommand) {
               msgEvent.reply(formatServices(
@@ -111,11 +120,14 @@ bot.on("message", async (msgEvent) => {
                   `:warning: **Invalid Command : "__${prefix + service} ${command}__"**`
                 ) + "\n\n"
               ));
+            } else if (e instanceof ParameterError) {
+              msgEvent.reply(formatCommand(
+                prefix, service, command, services.message[service][command].params,
+                `\n:warning: ${e.message}\n\n`
+              ))
             } else {
               msgEvent.reply(e.message);
             }
-          } finally {
-            msgEvent.delete();
           }
         }
       }

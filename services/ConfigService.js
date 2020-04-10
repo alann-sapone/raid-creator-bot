@@ -1,29 +1,33 @@
 // Base service
 import BaseService from "./BaseService";
 
-import { getConfig, setConfig } from "../config";
+// Store
+import store from "../store/store";
+import { add } from "../store/actions/configActions";
+
+// Helpers
+import { getParams } from "../helpers/command";
+
 
 export default class ConfigService extends BaseService {
-  set(params, msgEvent, commands, config, botClient) {
+  set = (params, msgEvent, commands, config, botClient) => {
     const guildId = msgEvent.guild.id;
-    const [key, value] = params;
-    try {
-      setConfig(guildId, key, value, botClient);
-      msgEvent.reply('Setting "' + key + '" set to value "' + value + '".');
-    } catch (error) {
-      msgEvent.reply(error.message);
-    }
+    const { key, value } = getParams(this, "set", params);
+
+    store.dispatch(add(guildId, key, value));
+    msgEvent.reply(`Setting **"${key}"** has now value **"${value}"**`);
   }
 
-  get(params, msgEvent, commands, config, botClient) {
+  get = (params, msgEvent, commands, config, botClient) => {
     const [key] = params;
     const guildId = msgEvent.guild.id;
-    const value = getConfig(guildId)[key];
 
-    if (value) {
-      msgEvent.reply('Setting "' + key + '" has value "' + value + '".');
+    const configuration = store.getState().configuration[guildId];
+
+    if (configuration.hasOwnProperty(key)) {
+      msgEvent.reply(`Setting **"${key}"** has value **"${configuration[key]}"**`);
     } else {
-      msgEvent.reply('No setting with name "' + key + '"');
+      throw new Error(`No configuration item named **"${key}"**`)
     }
   }
 

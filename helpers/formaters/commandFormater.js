@@ -1,15 +1,22 @@
 import { capitalize } from "../prototypes/string";
 
-export function formatCommand(prefix, serviceName, name, serviceCommand) {
-  const { description, params } = serviceCommand;
-  name = name !== "default" ? name : "";
-  
-  let content = `> **${description}**\n`;
+export function formatCommand(prefix, serviceName, name, params, intro = "") {
+  let content = `${intro}`;
   content += `>    ↳ ${prefix}${serviceName} ${name} ${params.map(param => {
     const paramContent = param.optional ? `optional:${param.name}`: param.name;
     return `[${paramContent}]`
-  })
-  .join(" ")}`;
+  }).join(" ")}`
+
+  return content;
+}
+
+export function formatCommandWithTitle(prefix, serviceName, name, serviceCommand, intro = "") {
+  const { description, params } = serviceCommand;
+  name = name !== "default" ? name : "";
+  
+  let content = `${intro}`;
+  content += `> **${description}**\n`;
+  content += `${formatCommand(prefix, serviceName, name, params)}`;
 
   return content;
 }
@@ -20,7 +27,7 @@ export function formatService(prefix, serviceName, serviceCommands, intro = "") 
   content += Object.keys(serviceCommands)
     .map((commandName) => {
       const serviceCommand = serviceCommands[commandName];
-      return `${formatCommand(
+      return `${formatCommandWithTitle(
         prefix,
         serviceName,
         commandName,

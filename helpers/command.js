@@ -1,3 +1,6 @@
+// Errors
+import ParameterError from "../errors/ParameterError";
+
 import services from "../services";
 
 export const parseCommand = (commandStr, prefix) => {
@@ -19,4 +22,19 @@ export const parseCommand = (commandStr, prefix) => {
 
 export const getCommands = () => {
   return services['message'];
+}
+
+export const getParams = (instance, commandName, givenCommands) => {
+  const commandParams = instance.getEventInterface().message[commandName].params
+  
+  const validated = {};
+  commandParams.forEach((command, index) => {
+    const givenValue = givenCommands[index];
+    if ((givenValue === undefined || givenValue === null) && !command.optional) {
+      throw new ParameterError(`The parameter **${command.name}** is not optional`);
+    }
+    validated[command.name] = givenValue;
+  });
+
+  return validated;
 }
