@@ -1,12 +1,15 @@
-import { embedFormater } from "../../helpers/formaters/embedFormater";
+// Base service
+import BaseService from "./BaseService";
+
+import { embedFormater } from "../helpers/formaters/embedFormater";
 
 // Store
-import store from "../../store/store";
-import { add } from "../../store/actions/raidActions";
+import store from "../store/store";
+import { add } from "../store/actions/raidActions";
 
 const Discord = require("discord.js");
 
-export default class RaidService {
+export default class RaidService extends BaseService{
 
   designEvent = async (sentMessage, author, event, profile) => {
     const authorAvatar = author.avatar
@@ -45,28 +48,7 @@ export default class RaidService {
     await sentMessage.react("👍");
   };
 
-  // rc!raid create [name] [description] [date] [hour] [profile]
   create = async (params, msgEvent, commands, config, botClient) => {
-    /*
-    const [name, description, date, hour, profile] = params;
-    const { id: serverId } = msgEvent.guild;
-    const { id: channelId } = msgEvent.channel;
-    const { author } = msgEvent;
-
-    // Send the first message
-    const sentMessage = await msgEvent.channel.send("\u200B");
-    const { id: messageId } = sentMessage;
-
-    if (!this.created[serverId]) this.created[serverId] = {};
-    if (!this.created[serverId][channelId])
-      this.created[serverId][channelId] = {};
-
-    // And edit it with markdown presentation now that we have an ID.
-    this.created[serverId][channelId][messageId] = eventsSources[2];
-    const event = this.created[serverId][channelId][messageId];
-    this.designEvent(sentMessage, author, event);
-    */
-
     const [name, description, date, hour, profilId] = params;
 
     const { id: guildId } = msgEvent.guild;
@@ -91,12 +73,53 @@ export default class RaidService {
         "https://www.heroesfire.com/images/wikibase/icon/heroes/ragnaros.png"
     };
 
+    await this.designEvent(sentMessage, author, event, profile);
     store.dispatch(add(guildId, messageId, event, profile));
 
     // Add reactions to subscribe
     this.addReactions(sentMessage);
-
-
-    this.designEvent(sentMessage, author, event, profile);
   };
+
+  onReactionAdded = (bot, msgEvent, user) => {
+    if (!user.bot) {
+      console.log("Raid service, new user inscription : ", user.id);
+    }
+  }
+  
+  onReactionRemoved = (bot, msgEvent, user) => {
+    if (!user.bot) {
+      console.log("Raid service, remove user inscription : ", user.id);
+    }
+  }
+
+  getEventInterface = () => ({
+    message: {
+      create: {
+        callback: this.create,
+        description: "Create a new event",
+        params: [{
+          name: "eventName",
+          optional: false,
+        }, {
+          name: "description",
+          optional: false,
+        }, {
+          name: "date",
+          optional: false,
+        }, {
+          name: "hour",
+          optional: false,
+        }, {
+          name: "profile",
+          optional: false,
+        }],
+      },
+    },
+    messageReactionAdd: {
+      callback: this.onReactionAdded
+    },
+    messageReactionRemove: {
+      callback: this.onReactionRemoved
+    }
+  });
 }

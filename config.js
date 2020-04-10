@@ -1,5 +1,3 @@
-import { formatCommands } from "./helpers/formaters/commandFormater";
-import { getCommands } from "./services/commands";
 
 const baseConfig = {
   prefix: "rc!"
@@ -8,6 +6,14 @@ const baseConfig = {
 const configs = {
   events: {}
 };
+
+function getCommands() {
+  return {};
+}
+
+function formatCommands() {
+  return "";
+}
 
 export function setConfig(guildId, key, value, botClient) {
   if (key && value) {

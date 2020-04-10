@@ -1,22 +1,25 @@
+// Base service
+import BaseService from "./BaseService";
+
 // Helpers
-import { askMany, askYesNo } from "../../helpers/discussion";
+import { askMany, askYesNo } from "../helpers/discussion";
 import {
   getCharacters,
   flattenPlayerCharacters,
-  getBaseCharacter
-} from "../../helpers/entities/character";
-import { characterValidators, basicValidators } from "../../helpers/validation";
-import { getSpecialisations } from "../../helpers/entities/specialisation";
-import { characterFormater } from "../../helpers/formaters/characterFormater";
+  getBaseCharacter,
+} from "../helpers/entities/character";
+import { characterValidators, basicValidators } from "../helpers/validation";
+import { getSpecialisations } from "../helpers/entities/specialisation";
+import { characterFormater } from "../helpers/formaters/characterFormater";
 
 // Constants
-import { classes, factions } from "../../constant";
+import { classes, factions } from "../constant";
 
 // Store
-import store from "../../store/store";
-import { add, remove } from "../../store/actions/characterActions";
+import store from "../store/store";
+import { add, remove } from "../store/actions/characterActions";
 
-export default class PlayerService {
+export default class CharacterService extends BaseService {
   getFormatYesNo = (characterData, guild) => {
     let { name, class: cClass, faction, talentTree } = characterData;
     const className = classes[cClass];
@@ -27,7 +30,7 @@ export default class PlayerService {
     return (
       `\u200B\n${classIcon} ** ${name} ** (${className} - ${factionName})` +
       `\n${specialisations
-        .map(spec => {
+        .map((spec) => {
           const speIcon = store.getState().emojis[guild.id][
             className + spec.name
           ];
@@ -60,9 +63,9 @@ export default class PlayerService {
               true
             ),
           options: { retryOnFail: true },
-          validator: indexPlusOne =>
-            basicValidators.validateArrayPick(flattenCharacters, indexPlusOne)
-        }
+          validator: (indexPlusOne) =>
+            basicValidators.validateArrayPick(flattenCharacters, indexPlusOne),
+        },
       ];
 
       let results;
@@ -111,14 +114,14 @@ export default class PlayerService {
             )
             .join("\n"),
         options: { retryOnFail: true },
-        validator: characterValidators.validateFaction
+        validator: characterValidators.validateFaction,
       },
       {
         answerId: "name",
         question:
           "Please, enter your character name juste like your character in game :",
         options: { retryOnFail: true },
-        validator: characterValidators.validateName
+        validator: characterValidators.validateName,
       },
       {
         answerId: "class",
@@ -129,17 +132,17 @@ export default class PlayerService {
             .join("\n"),
         options: { retryOnFail: true },
         validator: characterValidators.validateClass,
-        interpolate: results => {
+        interpolate: (results) => {
           const { name, faction } = results;
           return getBaseCharacter(guild.id, author.id, name, faction);
-        }
+        },
       },
       {
         answerId: "talentTree",
         question: "Please, what is your talent tree (i.e: **__30/0/21__**) :",
         options: { retryOnFail: true },
-        validator: characterValidators.validateTalentTree
-      }
+        validator: characterValidators.validateTalentTree,
+      },
     ];
 
     let characterData;
@@ -183,4 +186,24 @@ export default class PlayerService {
       );
     }
   };
+
+  getEventInterface = () => ({
+    message: {
+      add: {
+        callback: this.add,
+        description: "Add a character to this server",
+        params: []
+      },
+      list: {
+        callback: this.list,
+        description: "List your characters from this server",
+        params: []
+      },
+      remove: {
+        callback: this.remove,
+        description: "Remove a character from this server",
+        params: []
+      },
+    },
+  });
 }

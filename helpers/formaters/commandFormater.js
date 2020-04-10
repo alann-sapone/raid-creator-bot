@@ -1,47 +1,48 @@
-export function formatCommands(
-  commands,
-  prefix,
-  subCommandOnly = false,
-  isSubcommand = false,
-  curCommand = ""
-) {
-  let description = !isSubcommand ? "\nHow to use :" : "";
-  curCommand = curCommand.length === 0 ? prefix : curCommand + " ";
+import { capitalize } from "../prototypes/string";
 
-  description += Object.keys(commands)
-    .map(origCommand => {
-      const thisCommand = curCommand + origCommand;
-      const command = !isSubcommand ? prefix + origCommand : origCommand;
-      const { description, params, commands: subCommands } = commands[
-        origCommand
-      ];
+export function formatCommand(prefix, serviceName, name, serviceCommand) {
+  const { description, params } = serviceCommand;
+  name = name !== "default" ? name : "";
+  
+  let content = `> **${description}**\n`;
+  content += `>    ↳ ${prefix}${serviceName} ${name} ${params.map(param => {
+    const paramContent = param.optional ? `optional:${param.name}`: param.name;
+    return `[${paramContent}]`
+  })
+  .join(" ")}`;
 
-      let line = "";
+  return content;
+}
 
-      if (isSubcommand) {
-        line = "\n    - " + thisCommand + " " + params + " : " + description;
-      } else {
-        line = "\n" + command + " : " + description;
-      }
-
-      if (subCommandOnly) {
-        line = "\n - " + thisCommand + " " + params + " : " + description;
-      }
-
-      return (
-        line +
-        (subCommands
-          ? formatCommands(
-              subCommands,
-              prefix,
-              subCommandOnly,
-              true,
-              thisCommand
-            ) + "\n"
-          : "")
-      );
+export function formatService(prefix, serviceName, serviceCommands, intro = "") {
+  let content = `${intro}`;
+  content += `**${capitalize(serviceName)} :**\n`;
+  content += Object.keys(serviceCommands)
+    .map((commandName) => {
+      const serviceCommand = serviceCommands[commandName];
+      return `${formatCommand(
+        prefix,
+        serviceName,
+        commandName,
+        serviceCommand
+      )}`;
     })
-    .join("");
+    .join("\n");
 
-  return description;
+  return content;
+}
+
+export function formatServices(prefix, services, intro = "") {
+  let content = `${intro}`;
+  content += Object.keys(services)
+    .map((serviceName) => {
+      return `${formatService(
+        prefix,
+        serviceName,
+        services[serviceName]
+      )}`;
+    })
+    .join("\n\n");
+
+  return content;
 }

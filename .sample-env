@@ -2,5 +2,5 @@ TOKEN=
 
 DEV_MODE=false
 DEV_CHANNEL_ID=
-DEV_AUTOMATIC_COMMAND=
+DEV_AUTOMATIC_COMMAND=rc!raid create [sample] [description de l'évent] [30/04/2020] [20:30] [1]
 EMOJI_SOURCE_GUILD_ID=

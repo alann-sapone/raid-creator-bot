@@ -1,11 +1,21 @@
-import { runService } from "./services";
-import { getConfig } from "./config";
-import { formatCommands } from "./helpers/formaters/commandFormater";
+// Env
 import { getEnv } from "./helpers/env";
-import { getCommands } from "./services/commands";
+import { getConfig } from "./config";
 
+// Services
+import services from "./services";
+
+// Store
 import store from "./store/store";
 import { add } from "./store/actions/emojisActions";
+
+// Helpers
+import { parseCommand, getCommands } from "./helpers/command";
+import { formatServices, formatService } from "./helpers/formaters/commandFormater";
+
+// Errors
+import UnknownCommand from "./errors/UnknownCommand";
+import UnknownArgument from "./errors/UnknownArgument";
 
 // Fixtures
 import { installFixtures } from "./fixtures";
@@ -15,13 +25,16 @@ const bot = new Discord.Client({
   presence: {
     activity: {
       name: "!help",
-      type: "LISTENING"
-    }
-  }
+      type: "LISTENING",
+    },
+  },
 });
 const TOKEN = getEnv().TOKEN;
 bot.login(TOKEN);
 
+/*
+ * Ready
+ */
 bot.on("ready", async () => {
   console.log(`${bot.user.username} is up and running!`);
 
@@ -29,10 +42,10 @@ bot.on("ready", async () => {
   installFixtures("692550662642335894", "322289625504940032");
 
   // Store guild emojis by names
-  bot.guilds.cache.forEach(guild => {
+  bot.guilds.cache.forEach((guild) => {
     const emojisCache = guild.emojis.cache;
-    emojisCache.forEach(emojiData => {
-      const emoji = emojisCache.get(emojiData.id)
+    emojisCache.forEach((emojiData) => {
+      const emoji = emojisCache.get(emojiData.id);
       store.dispatch(add(guild.id, emojiData.name, emoji));
     });
   });
@@ -43,54 +56,85 @@ bot.on("ready", async () => {
       getEnv().DEV_CHANNEL_ID,
       true
     );
-    channelGeneral.messages.fetch().then(messages => {
-      messages.forEach(async message => {
+    channelGeneral.messages.fetch().then((messages) => {
+      messages.forEach(async (message) => {
         await message.delete();
       });
     });
-    
-    await channelGeneral.send(getEnv().DEV_AUTOMATIC_COMMAND);    
+
+    await channelGeneral.send(getEnv().DEV_AUTOMATIC_COMMAND);
   }
 });
 
-bot.on("message", async msgEvent => {
+/*
+ * Message with potential params
+ */
+bot.on("message", async (msgEvent) => {
   if (!msgEvent.author.bot || getEnv().DEV_MODE) {
-    const [origCommand, ...params] = msgEvent.content.split(" ");
-
-    // In guild
+    // From channel
     if (msgEvent.guild) {
-      // Universal help catch
-      if (origCommand.startsWith("!help")) {
-        runService("help", params, msgEvent, bot);
-      }
+      const { content, guild } = msgEvent;
+      const { id: guildId } = guild;
+      const { prefix } = getConfig(guildId);
 
-      // Prefix specified entries
-      const guildId = msgEvent.guild.id;
-      const { prefix, enabled } = getConfig(guildId);
-      if (origCommand.startsWith(prefix)) {
-        const command = origCommand.substr(prefix.length, origCommand.length);
-        if (command) {
+      // Help command without prefix
+      if (content.startsWith("!help")) {
+        services.message.help.default.callback([], msgEvent, [], getConfig(guildId), bot);
+      } else {
+        // Any other prefixed command
+        if (content.startsWith(prefix)) {
+          const { service, commands, args } = parseCommand(content, prefix);
+          const [ command ] = commands
+
           try {
-            runService(command, params, msgEvent, bot);
+            const serviceInstance = services["message"][service];
+            if (!serviceInstance) throw new UnknownCommand();
+
+            const serviceCommand = serviceInstance[command] || serviceInstance["default"];
+            if (!serviceCommand) throw new UnknownArgument();
+
+            serviceCommand.callback(args, msgEvent, commands, getConfig(guildId), bot);
+          } catch (e) {
+            if (e instanceof UnknownCommand) {
+              msgEvent.reply(formatServices(
+                prefix,
+                getCommands(),
+                `:warning: **Unknown Command : "__${prefix + service}__"**\n\n`)
+              );
+            } else if (e instanceof UnknownArgument) {
+              msgEvent.reply(formatService(
+                prefix,
+                service,
+                getCommands()[service],
+                "\n" + (command === "help" ? 
+                  `**Commands for "__${prefix + service}__": **` :
+                  `:warning: **Invalid Command : "__${prefix + service} ${command}__"**`
+                ) + "\n\n"
+              ));
+            } else {
+              msgEvent.reply(e.message);
+            }
+          } finally {
             msgEvent.delete();
-          } catch (error) {
-            msgEvent.reply(error.message);
           }
-        } else {
-          msgEvent.reply(formatCommands(getCommands(), prefix));
         }
       }
     }
   }
 });
 
-bot.on("messageReactionAdd", async msgEvent => {
-  const { message, users } = msgEvent;
-  const { id } = message;
-  
-  users.cache.forEach(user => {
-    if (!user.bot) {
-      console.log(user);
-    }
-  });
+/*
+ * Other events
+ */
+const events = [
+  "messageReactionAdd",
+  "messageReactionRemove",
+]
+events.forEach(eventName => {
+  bot.on(eventName, async (...args) => {
+    Object.keys(services[eventName]).forEach(serviceName => {
+      const service = services[eventName][serviceName];
+        service.callback(bot, ...args)
+    })
+  })
 })

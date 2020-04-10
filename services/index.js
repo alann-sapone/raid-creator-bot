@@ -1,42 +1,31 @@
-import { getConfig } from "../config";
-import { getCommands } from "./commands";
-import { formatCommands } from "../helpers/formaters/commandFormater";
+// Helpers
+import { createTree } from "../helpers/prototypes/objects";
 
-export function runService(command, origParams, msgEvent, botClient) {
-  const guildId = msgEvent.guild.id;
-  const config = getConfig(guildId);
-  const prefix = config.prefix;
+import CharacterService from "./CharacterService";
+import ConfigService from "./ConfigService";
+import HelpService from "./HelpService";
+import RaidService from "./RaidService";
 
-  const commands = getCommands();
+const services = {
+  character: new CharacterService(),
+  config: new ConfigService(),
+  help: new HelpService(),
+  raid: new RaidService(),
+};
 
-  const service = commands[command];
-  const ServiceClass = service ? commands[command].service : null;
-  let params = origParams;
+// Connect services to events
+const connectedServices = {};
+Object.keys(services).forEach((serviceName) => {
+  const service = services[serviceName];
+  const connection = service.getEventInterface();
 
-  if (ServiceClass) {
-    const service = new ServiceClass(msgEvent, commands, config, botClient);
-    const hasSubcommands = commands[command].hasOwnProperty("commands");
+  Object.keys(connection).forEach((connectionEvent) => {
+    createTree(
+      connectedServices,
+      [connectionEvent, serviceName],
+      connection[connectionEvent]
+    );
+  });
+});
 
-    let serviceEntry;
-    if (hasSubcommands) {
-      const [subCommand, ...otherParams] = origParams;
-      params = otherParams;
-      serviceEntry = service[subCommand];
-
-      if (serviceEntry && typeof serviceEntry == "function") {
-        serviceEntry(params, msgEvent, commands, config, botClient);
-      } else {
-        const subCommands = commands[command].commands;
-        const error =
-          "Invalid command for " +
-          command +
-          ".\n" +
-          formatCommands(subCommands, prefix, true, false, prefix + command);
-        throw new Error(error);
-      }
-    }
-  } else {
-    const error = "Invalid command.\n" + formatCommands(commands, prefix);
-    throw new Error(error);
-  }
-}
+export default connectedServices;
