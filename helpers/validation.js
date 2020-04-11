@@ -60,12 +60,25 @@ const validateFaction = indexPlusOne => {
   return validateArrayPick(factions, indexPlusOne);
 };
 
+const validateRosterName = (name, rosters) => {
+  name = validateString(name, 2);
+  rosters.forEach(roster => {
+    if (roster.name === name) {
+      throw new Error("This roster name is not available");
+    }
+  })
+}
+
 export const characterValidators = {
   validateName,
   validateClass,
   validateArchetype,
   validateFaction
 };
+
+export const rosterValidators = {
+  validateRosterName
+}
 
 export const basicValidators = {
   validateArrayPick,

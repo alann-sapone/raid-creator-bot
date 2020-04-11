@@ -2,7 +2,7 @@ import BaseService from "./BaseService";
 
 // Helpers
 import { askMany, ask, askYesNo } from "../helpers/discussion";
-import { basicValidators } from "../helpers/validation";
+import { basicValidators, rosterValidators } from "../helpers/validation";
 import { rosterFormater } from "../helpers/formaters/rosterFormater";
 
 // Constants
@@ -27,12 +27,13 @@ export default class RosterServer extends BaseService {
     const { author, guild } = msgEvent;
     const dmChannel = await author.createDM();
 
+    const rosters = store.getState().roster[guild.id];
     const rosterData = {};
 
     // Ask for roster name
     const nameQuestion = {
       question: "Please, enter a name for this roster configuration:\n",
-      validator: (str => basicValidators.validateString(str, 2))
+      validator: (name => rosterValidators.validateRosterName(name, rosters))
     };
     rosterData.name = await ask(dmChannel, nameQuestion)
 

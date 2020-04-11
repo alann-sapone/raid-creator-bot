@@ -15,7 +15,7 @@ import { getParams } from "./helpers/command";
 var clear = require('clear');
 
 // Errors
-import { UnknownCommandError, UnknownArgumentError, ParameterError } from "./classes/errors";
+import { UnknownCommandError, UnknownArgumentError, ParameterError, CanceledError } from "./classes/errors";
 
 // Fixtures
 import { installFixtures } from "./fixtures";
@@ -116,7 +116,9 @@ bot.on("message", async (msgEvent) => {
             } else if (e instanceof UnknownArgumentError) {
               msgEvent.reply(e.format(prefix, service, command));
             } else if (e instanceof ParameterError) {
-              msgEvent.reply(e.format(prefix, service, command, serviceCommand))
+              msgEvent.reply(e.format(prefix, service, command, serviceCommand));
+            } else if (e instanceof CanceledError) {
+              e.channel.send(e.message);
             } else {
               msgEvent.reply(e.message);
             }

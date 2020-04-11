@@ -50,3 +50,11 @@ export class UnknownCommandError extends Error {
     );
   }
 }
+
+// CanceledErrror
+export class CanceledError extends Error {
+  constructor(message, channel) {
+    super(message);
+    this.channel = channel;
+  }
+}

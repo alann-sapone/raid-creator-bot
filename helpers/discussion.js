@@ -1,4 +1,8 @@
+// Helpers
 import { basicValidators } from "./validation";
+
+// Errors
+import { CanceledError } from "../classes/errors";
 
 const defaultOptions = {
   retryOnFail: true,
@@ -19,7 +23,7 @@ export const ask = async (dmChannel, questionData, currentAnswers) => {
   let validatedResult = null;
 
   if (result === "!cancel") {
-    throw new Error("Canceled");
+    throw new CanceledError("Canceled", dmChannel);
   }
 
   try {
