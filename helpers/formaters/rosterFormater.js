@@ -31,7 +31,7 @@ const formatRoster = (roster, index, showLimits = true, showIndex = false) => {
 const formatRosters = (rosters, showLimits = true, showIndex = false) => {
   return rosters
     .map((roster, index) => formatRoster(roster, index, showLimits, showIndex))
-    .join("\n" + showLimits ? "\n" : "");
+    .join("\n" + (showLimits ? "\n" : ""));
 };
 
 export const rosterFormater = {

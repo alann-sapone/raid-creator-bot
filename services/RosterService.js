@@ -15,14 +15,12 @@ import { add, remove } from "../store/actions/rosterActions";
 export default class RosterServer extends BaseService {
 
   cleanLimits = (limits) => {
-    if (limits) {
-      Object.keys(limits).forEach(key => {
-        const limit = limits[key];
-        if (limit === -1) {
-          delete limits[key];
-        }
-      })
-    }
+    Object.keys(limits).forEach(key => {
+      const limit = limits[key];
+      if (limit === -1) {
+        delete limits[key];
+      }
+    })
   }
 
   add = async (params, msgEvent, commands, config, botClient) => {
@@ -50,8 +48,8 @@ export default class RosterServer extends BaseService {
         }
       })
       rosterData.roleLimit = await askMany(dmChannel, roleQuestions, "Add limits to roles");
+      this.cleanLimits(rosterData.roleLimit);
     }
-    this.cleanLimits(rosterData.roleLimit);
 
     // Ask for class limiting
     const limitByClass = await askYesNo(dmChannel, `Do you want to add an inscription limit by class ?\n> (i.e. ${Object.keys(classes).map(cClass => classes[cClass]).join(", ")})`);
@@ -65,8 +63,8 @@ export default class RosterServer extends BaseService {
         }
       })
       rosterData.classLimit = await askMany(dmChannel, classQuestions, "Add limits to classes");
+      this.cleanLimits(rosterData.classLimit);
     }
-    this.cleanLimits(rosterData.classLimit);
     store.dispatch(add(guild.id, rosterData));
     dmChannel.send("Roster successfuly added !");
   };
