@@ -12,7 +12,6 @@ export default function raidReducer(state = initialState, action) {
     switch (type) {
       case types.RAID_ADD: {
         const { event, profile } = action;
-        console.log(type, guildId, messageId, event, profile);
         createTree(draftState, [guildId, messageId], {
           event,
           profile,

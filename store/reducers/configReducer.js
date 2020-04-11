@@ -10,13 +10,12 @@ const initialState = {
   }
 };
 
-export default function raidReducer(state = initialState, action) {
+export default function configReducer(state = initialState, action) {
   const { type, guildId } = action;
   return produce(state, (draftState) => {
     switch (type) {
       case types.CONFIG_SET: {
         const { key, value } = action;
-        console.log(guildId, key, value);
         if (draftState.default.hasOwnProperty(key)) {
           draftState[guildId][key] = value;
         } else {

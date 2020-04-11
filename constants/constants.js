@@ -1,6 +1,10 @@
 // Classes
 import Archetype from "../classes/characters/Archetype";
 
+/*
+ * Misc
+ */
+
 export const factions = {
   HORDE: "Horde",
   ALLIANCE: "Alliance"

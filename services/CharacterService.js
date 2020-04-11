@@ -112,7 +112,6 @@ export default class CharacterService extends BaseService {
               false,
               true
             ),
-          options: { retryOnFail: true },
           validator: (indexPlusOne) =>
             basicValidators.validateArrayPick(flattenCharacters, indexPlusOne),
         },

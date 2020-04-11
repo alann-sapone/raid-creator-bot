@@ -39,9 +39,6 @@ bot.on("ready", async () => {
   clear();
   console.log(`${bot.user.username} is up and running!`);
 
-  // Install fixtures
-  installFixtures("692550662642335894", "322289625504940032");
-
   bot.guilds.cache.forEach((guild) => {
     const guildId = guild.id;
 
@@ -54,7 +51,9 @@ bot.on("ready", async () => {
 
     // Initiate guild data
     store.dispatch(configInit(guildId));
-    // TODO : get persisted guild data
+    
+    // Install fixtures
+    installFixtures("692550662642335894", "322289625504940032");
   });
 
   // While dev mode is on, auto clean + restart command to itself

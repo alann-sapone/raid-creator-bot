@@ -29,7 +29,7 @@ export const ask = async (dmChannel, questionData, currentAnswers) => {
     if (options.retryOnFail) return ask(dmChannel, questionData, currentAnswers);
   }
 
-  return validatedResult ? validatedResult : result;
+  return validatedResult !== undefined && validatedResult !== null ? validatedResult : result;
 };
 
 export const askMany = async (dmChannel, questions, title) => {
@@ -69,8 +69,6 @@ export const askMany = async (dmChannel, questions, title) => {
       }
     }
   }
-
-  console.log("returned", results);
 
   return results;
 };

@@ -17,10 +17,10 @@ const validateArrayPick = (array, indexPlusOne) => {
   return Object.keys(array)[valueI - 1];
 };
 
-const validateString = (string, minSize) => {
+const validateString = (string, minSize = 0) => {
   if (string.trim().length < minSize) {
     throw new CommandError(
-      "Invalid value. Its length must be higher than " + minSize + "."
+      "Invalid value. Its length must be at least " + minSize + " size long."
     );
   }
 
@@ -32,9 +32,9 @@ const validateRange = (value, min, max) => {
   if (isNaN(valueI) || valueI < min || valueI > max) {
     throw new CommandError(
       `Invalid value. Please, enter a value between ${min} and ${max}`
-    );
-  }
-
+      );
+    }
+    
   return valueI;
 }
 
