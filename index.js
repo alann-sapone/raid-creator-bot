@@ -51,6 +51,9 @@ bot.on("ready", async () => {
 
     // Initiate guild data
     store.dispatch(configInit(guildId));
+
+    // See store on update
+    // store.subscribe( () => { console.log(store.getState().event); })
     
     // Install fixtures
     installFixtures("692550662642335894", "322289625504940032");

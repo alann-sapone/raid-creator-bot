@@ -3,7 +3,6 @@
  */
 export const types = {
   ROSTER_ADD: "ROSTER_ADD",
-  ROSTER_EDIT: "ROSTER_EDIT",
   ROSTER_REMOVE: "ROSTER_REMOVE",
 };
 
@@ -17,14 +16,7 @@ export const add = (guildId, rosterData) => {
     rosterData
   };
 };
-export const edit = (guildId, rosterIndex, rosterData) => {
-  return {
-    type: types.ROSTER_EDIT,
-    guildId,
-    rosterIndex,
-    rosterData
-  };
-};
+
 export const remove = (guildId, rosterIndex) => {
   return {
     type: types.ROSTER_REMOVE,
