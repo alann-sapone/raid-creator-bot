@@ -12,6 +12,7 @@ import { init as configInit } from "./store/actions/configActions";
 // Helpers
 import { parseCommand } from "./helpers/command";
 import { getParams } from "./helpers/command";
+var clear = require('clear');
 
 // Errors
 import UnknownCommand from "./errors/UnknownCommand";
@@ -37,6 +38,7 @@ bot.login(TOKEN);
  * Ready
  */
 bot.on("ready", async () => {
+  clear();
   console.log(`${bot.user.username} is up and running!`);
 
   // Install fixtures

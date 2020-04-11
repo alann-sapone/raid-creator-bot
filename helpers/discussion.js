@@ -1,7 +1,17 @@
 import { basicValidators } from "./validation";
 
-export const ask = async (dmChannel, questionData) => {
-  const { question, options, validator } = questionData;
+const defaultOptions = {
+  retryOnFail: true,
+};
+
+export const ask = async (dmChannel, questionData, currentAnswers) => {
+  const { validator } = questionData;
+  const options = { ...defaultOptions, ...questionData.options };
+  const question =
+    typeof questionData.question == "function"
+      ? questionData.question(currentAnswers)
+      : questionData.question;
+      
   await dmChannel.send(question);
 
   const message = await dmChannel.awaitMessages(() => true, { max: 1 });
@@ -13,10 +23,10 @@ export const ask = async (dmChannel, questionData) => {
   }
 
   try {
-    if (validator) validatedResult = validator(result);
+    if (validator) validatedResult = validator(result, currentAnswers);
   } catch (error) {
     await dmChannel.send("Error : " + error.message);
-    if (options.retryOnFail) return ask(dmChannel, questionData);
+    if (options.retryOnFail) return ask(dmChannel, questionData, currentAnswers);
   }
 
   return validatedResult ? validatedResult : result;
@@ -24,7 +34,6 @@ export const ask = async (dmChannel, questionData) => {
 
 export const askMany = async (dmChannel, questions, title) => {
   const results = {};
-
   let content = "";
   const intro = '\n*You can type "!cancel" at any time to stop this process.*';
 
@@ -32,25 +41,36 @@ export const askMany = async (dmChannel, questions, title) => {
   content += intro;
   (intro || title) && (content += "\n\u200B");
 
-  if (questions[0] && content.length > 0)
+  if (questions[0] && questions[0].question && content.length > 0)
     questions[0].question = content + "\n" + questions[0].question;
+  else if (
+    questions[0] &&
+    questions[0].subQuestions &&
+    questions[0].subQuestions[0] &&
+    content.length > 0
+  )
+    questions[0].subQuestions[0].question =
+      content + "\n" + questions[0].subQuestions[0].question;
 
   for (const questionData of questions) {
     const { answerId, ...otherQuestionData } = questionData;
-    const { interpolate } = otherQuestionData;
+    const { interpolate, subQuestions } = otherQuestionData;
 
-    // Check if question is needed or if we can get answer from current results
-    let interpolatedResult = null;
-    if (interpolate) {
-      interpolatedResult = interpolate(results);
-    }
-
-    if (interpolatedResult) {
-      results[answerId] = interpolatedResult[answerId];
+    if (subQuestions) {
+      results[answerId] = await askMany(dmChannel, subQuestions);
     } else {
-      results[answerId] = await ask(dmChannel, otherQuestionData);
+      // Check if question is needed or if we can get answer from current results
+      const interpolatedResult = interpolate ? interpolate(results) : null;
+
+      if (interpolatedResult) {
+        results[answerId] = interpolatedResult[answerId];
+      } else {
+        results[answerId] = await ask(dmChannel, otherQuestionData, results);
+      }
     }
   }
+
+  console.log("returned", results);
 
   return results;
 };
@@ -58,7 +78,7 @@ export const askMany = async (dmChannel, questions, title) => {
 export const askYesNo = async (dmChannel, question) => {
   const yesNo = {
     YES: "Yes",
-    NO: "No"
+    NO: "No",
   };
 
   const result = await ask(dmChannel, {
@@ -69,7 +89,7 @@ export const askYesNo = async (dmChannel, question) => {
         .map((answer, index) => `**__${index + 1}__** - ${yesNo[answer]}`)
         .join("\n"),
     options: { retryOnFail: true },
-    validator: value => basicValidators.validateArrayPick(yesNo, value)
+    validator: (value) => basicValidators.validateArrayPick(yesNo, value),
   });
 
   return yesNo[result] === yesNo.YES;

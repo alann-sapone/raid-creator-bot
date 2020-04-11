@@ -1,4 +1,7 @@
-// store
+// Archetypes
+import archetypes from "../../constants/archetypes";
+
+// Store
 import store from "../../store/store";
 
 export const flattenPlayerCharacters = characters => {
@@ -35,4 +38,12 @@ export const getBaseCharacter = (guildId, userId, name, faction) => {
   } catch (error) {
     return false;
   }
+};
+
+export const getArchetype = (specialisation, cClass) => {
+  return archetypes.filter(
+    (archetype) =>
+      archetype.isSpecialisation(specialisation) &&
+      archetype.isClass(cClass)
+  );
 };

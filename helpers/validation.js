@@ -17,6 +17,27 @@ const validateArrayPick = (array, indexPlusOne) => {
   return Object.keys(array)[valueI - 1];
 };
 
+const validateString = (string, minSize) => {
+  if (string.trim().length < minSize) {
+    throw new CommandError(
+      "Invalid value. Its length must be higher than " + minSize + "."
+    );
+  }
+
+  return string.trim();
+}
+
+const validateRange = (value, min, max) => {
+  const valueI = parseInt(value);
+  if (isNaN(valueI) || valueI < min || valueI > max) {
+    throw new CommandError(
+      `Invalid value. Please, enter a value between ${min} and ${max}`
+    );
+  }
+
+  return valueI;
+}
+
 /*
  * Character validation
  */
@@ -30,33 +51,9 @@ const validateClass = indexPlusOne => {
   return validateArrayPick(classes, indexPlusOne);
 };
 
-const validateTalentTree = talentTree => {
-  const tree = talentTree.split("/");
-  if (tree.length !== 3) {
-    throw new CommandError("Invalid talent tree. Please verify your input");
-  }
-
-  let total = 0;
-  const mappedString = tree.map(treeValueString => parseInt(treeValueString));
-  mappedString.forEach(treeValue => {
-    if (isNaN(treeValue)) {
-      throw new CommandError("Invalid talent value. Please verify your input");
-    } else {
-      if (treeValue < 0)
-        throw new CommandError(
-          "Invalid talent value. Value can't be smaller than 0."
-        );
-      total += treeValue;
-    }
-
-    if (total > 51) {
-      throw new CommandError(
-        "Invalid talent value. The total cannot exceed 51."
-      );
-    }
-  });
-
-  return mappedString;
+const validateArchetype = (archetypes, indexPlusOne) => {
+  const realIndex = validateArrayPick(archetypes, indexPlusOne);
+  return archetypes[realIndex].getSpecialisation();
 };
 
 const validateFaction = indexPlusOne => {
@@ -66,10 +63,12 @@ const validateFaction = indexPlusOne => {
 export const characterValidators = {
   validateName,
   validateClass,
-  validateTalentTree,
+  validateArchetype,
   validateFaction
 };
 
 export const basicValidators = {
-  validateArrayPick
+  validateArrayPick,
+  validateString,
+  validateRange
 };

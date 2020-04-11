@@ -9,36 +9,87 @@ import {
   getBaseCharacter,
 } from "../helpers/entities/character";
 import { characterValidators, basicValidators } from "../helpers/validation";
-import { getSpecialisations } from "../helpers/entities/specialisation";
 import { characterFormater } from "../helpers/formaters/characterFormater";
 
 // Constants
 import { classes, factions } from "../constant";
+import { archetypeFilter } from "../constants/archetypes";
 
 // Store
 import store from "../store/store";
 import { add, remove } from "../store/actions/characterActions";
 
 export default class CharacterService extends BaseService {
-  getFormatYesNo = (characterData, guild) => {
-    let { name, class: cClass, faction, talentTree } = characterData;
-    const className = classes[cClass];
-    const factionName = factions[faction];
-    const classIcon = store.getState().emojis[guild.id][className];
-    const specialisations = getSpecialisations(className, talentTree, false);
 
-    return (
-      `\u200B\n${classIcon} ** ${name} ** (${className} - ${factionName})` +
-      `\n${specialisations
-        .map((spec) => {
-          const speIcon = store.getState().emojis[guild.id][
-            className + spec.name
-          ];
-          return `\n> ${speIcon} ${spec.name} (${spec.value})`;
-        })
-        .join("")}
-    \nAre the provided informations valid ?`
-    );
+  add = async (params, msgEvent, commands, config, botClient) => {
+    const { author, guild } = msgEvent;
+    const dmChannel = await author.createDM();
+
+    const questions = [
+      {
+        answerId: "faction",
+        question:
+          "Please, select your faction :\n" +
+          Object.keys(factions).map((faction, index) => `${store.getState().emojis[guild.id][factions[faction]]}  **__${index + 1}__**  - ${factions[faction]}`).join("\n"),
+        validator: characterValidators.validateFaction,
+      },
+      {
+        answerId: "name",
+        question: "Please, enter your character name exactly like your character in game :",
+        validator: characterValidators.validateName,
+      },
+      {
+        answerId: "class",
+        question:
+          "Please, select your class :\n" +
+          Object.keys(classes)
+            .map((cClass, index) => `${store.getState().emojis[guild.id][classes[cClass]]}  **__${index + 1}__**  - ${classes[cClass]}`)
+            .join("\n"),
+        validator: characterValidators.validateClass,
+        interpolate: (results) => {
+          const { name, faction } = results;
+          return getBaseCharacter(guild.id, author.id, name, faction);
+        },
+      },
+      {
+        answerId: "specialisation",
+        question: (answers) => {
+          const archetypes = archetypeFilter.getFromClass(classes[answers.class]);
+          return "Please, what select your specialisation :\n" + 
+          archetypes.map((archetype, index) => `${store.getState().emojis[guild.id][archetype.getIconName()]}  **__${index + 1}__**  - ${archetype.getSpecialisation()}`)
+          .join("\n")
+        },
+        validator: (indexPlusOne, answers) => {
+          const archetypes = archetypeFilter.getFromClass(classes[answers.class]);
+          return characterValidators.validateArchetype(archetypes, indexPlusOne)
+        }
+      },
+    ];
+
+    try {
+      const characterData = await askMany(dmChannel, questions, "Add a character to your profile");
+      store.dispatch(add(guild.id, author.id, characterData));
+      dmChannel.send("Character successfuly added !");
+    } catch (error) {
+      await dmChannel.send(error.message);
+    }
+  };
+
+  list = async (params, msgEvent, commands, config, botClient) => {
+    const { author, guild } = msgEvent;
+    const dmChannel = await author.createDM();
+
+    const characters = getCharacters(guild, author);
+    const flattenCharacters = flattenPlayerCharacters(characters);
+
+    if (flattenCharacters.length === 0) {
+      dmChannel.send("You have no character registered on this server");
+    } else {
+      dmChannel.send(
+        "**Registered characters on this server :**\n\n" +
+          characterFormater.formatCharacters(guild, flattenCharacters)
+      );
+    }
   };
 
   remove = async (params, msgEvent, commands, config, botClient) => {
@@ -99,93 +150,6 @@ export default class CharacterService extends BaseService {
     }
   };
 
-  add = async (params, msgEvent, commands, config, botClient) => {
-    const { author, guild } = msgEvent;
-    const dmChannel = await author.createDM();
-
-    const questions = [
-      {
-        answerId: "faction",
-        question:
-          "Please, select your faction :\n" +
-          Object.keys(factions)
-            .map(
-              (faction, index) => `**__${index + 1}__** - ${factions[faction]}`
-            )
-            .join("\n"),
-        options: { retryOnFail: true },
-        validator: characterValidators.validateFaction,
-      },
-      {
-        answerId: "name",
-        question:
-          "Please, enter your character name juste like your character in game :",
-        options: { retryOnFail: true },
-        validator: characterValidators.validateName,
-      },
-      {
-        answerId: "class",
-        question:
-          "Please, select your class :\n" +
-          Object.keys(classes)
-            .map((klass, index) => `**__${index + 1}__** - ${classes[klass]}`)
-            .join("\n"),
-        options: { retryOnFail: true },
-        validator: characterValidators.validateClass,
-        interpolate: (results) => {
-          const { name, faction } = results;
-          return getBaseCharacter(guild.id, author.id, name, faction);
-        },
-      },
-      {
-        answerId: "talentTree",
-        question: "Please, what is your talent tree (i.e: **__30/0/21__**) :",
-        options: { retryOnFail: true },
-        validator: characterValidators.validateTalentTree,
-      },
-    ];
-
-    let characterData;
-    try {
-      do {
-        characterData = await askMany(
-          dmChannel,
-          questions,
-          "Add a character to your profile"
-        );
-      } while (
-        !(await askYesNo(dmChannel, this.getFormatYesNo(characterData, guild)))
-      );
-    } catch (error) {
-      await dmChannel.send(error.message);
-      return;
-    }
-
-    try {
-      store.dispatch(add(guild.id, author.id, characterData));
-      dmChannel.send("Character successfuly added !");
-    } catch (error) {
-      await dmChannel.send(error.message);
-      return;
-    }
-  };
-
-  list = async (params, msgEvent, commands, config, botClient) => {
-    const { author, guild } = msgEvent;
-    const dmChannel = await author.createDM();
-
-    const characters = getCharacters(guild, author);
-    const flattenCharacters = flattenPlayerCharacters(characters);
-
-    if (flattenCharacters.length === 0) {
-      dmChannel.send("You have no character registered on this server");
-    } else {
-      dmChannel.send(
-        "**Registered characters on this server :**\n\n" +
-          characterFormater.formatCharacters(guild, flattenCharacters)
-      );
-    }
-  };
 
   getEventInterface = () => ({
     message: {

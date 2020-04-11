@@ -21,24 +21,24 @@ export const getCharacterFixtures = (guildId, userID) => [
     faction: "HORDE",
     name: "Akryptik",
     class: "WARLOCK",
-    talentTree: [0, 0, 0]
+    specialisation: "Destruction"
   }),
   new CharacterFixture(guildId, userID, {
     faction: "HORDE",
     name: "Queudbelette",
     class: "WARRIOR",
-    talentTree: [21, 30, 0]
+    specialisation: "Fury"
   }),
   new CharacterFixture(guildId, userID, {
     faction: "HORDE",
     name: "Akryptik",
     class: "WARLOCK",
-    talentTree: [0, 30, 21]
+    specialisation: "Demonology"
   }),
   new CharacterFixture(guildId, userID, {
     faction: "ALLIANCE",
     name: "Akryptik",
     class: "ROGUE",
-    talentTree: [30, 0, 21]
+    specialisation: "Assassination"
   })
 ];

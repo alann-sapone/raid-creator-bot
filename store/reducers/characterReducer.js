@@ -14,23 +14,24 @@ export default function characterReducer(state = initialState, action) {
     switch (type) {
       case types.CHARACTER_ADD: {
         const { characterData } = action;
-        const { faction, name, class: cclass, talentTree } = characterData;
+        const { faction, name, class: cClass, specialisation } = characterData;
+
         createTree(draftState, [guildId, authorId, faction, name], {
-          class: cclass,
-          talentTrees: []
+          class: cClass,
+          specialisations: []
         });
 
-        const talents =
-          draftState[guildId][authorId][faction][name].talentTrees;
-        talents.forEach(savedTalentTree => {
-          if (equal(savedTalentTree, talentTree)) {
+        const { specialisations } = draftState[guildId][authorId][faction][name];
+        specialisations.forEach(_specialisation => {
+          if (specialisation === _specialisation) {
             throw new Error(
               "Character Addition Canceled : This character definition already exists."
             );
           }
         });
+        
+        specialisations.push(specialisation);
 
-        talents.push(talentTree);
         break;
       }
 

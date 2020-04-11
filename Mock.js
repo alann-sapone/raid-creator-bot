@@ -1,3 +1,5 @@
+
+/*
 import { roles, classes, talentTrees } from "./constant";
 import { capitalize } from "./helpers/prototypes/string";
 
@@ -53,3 +55,4 @@ export const eventsSources = {
 export const characters = {};
 
 export const realData = {};
+*/
