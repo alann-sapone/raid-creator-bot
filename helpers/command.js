@@ -1,5 +1,5 @@
 // Errors
-import ParameterError from "../errors/ParameterError";
+import { ParameterError } from "../classes/errors";
 
 import services from "../services";
 

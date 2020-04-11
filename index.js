@@ -15,9 +15,7 @@ import { getParams } from "./helpers/command";
 var clear = require('clear');
 
 // Errors
-import UnknownCommand from "./errors/UnknownCommand";
-import UnknownArgument from "./errors/UnknownArgument";
-import ParameterError from "./errors/ParameterError";
+import { UnknownCommandError, UnknownArgumentError, ParameterError } from "./classes/errors";
 
 // Fixtures
 import { installFixtures } from "./fixtures";
@@ -100,11 +98,11 @@ bot.on("message", async (msgEvent) => {
           try {
             // Get Service
             const serviceInstance = services["message"][service];
-            if (!serviceInstance) throw new UnknownCommand();
+            if (!serviceInstance) throw new UnknownCommandError();
 
             // Get Service command
             serviceCommand = serviceInstance[command] || serviceInstance["default"];
-            if (!serviceCommand) throw new UnknownArgument();
+            if (!serviceCommand) throw new UnknownArgumentError();
             
             // Validate arguments
             const validatedArgs = getParams(serviceCommand.params, args);
@@ -114,9 +112,9 @@ bot.on("message", async (msgEvent) => {
               msgEvent.delete();
             }
           } catch (e) {
-            if (e instanceof UnknownCommand) {
+            if (e instanceof UnknownCommandError) {
               msgEvent.reply(e.format(prefix, service));
-            } else if (e instanceof UnknownArgument) {
+            } else if (e instanceof UnknownArgumentError) {
               msgEvent.reply(e.format(prefix, service, command));
             } else if (e instanceof ParameterError) {
               msgEvent.reply(e.format(prefix, service, command, serviceCommand))

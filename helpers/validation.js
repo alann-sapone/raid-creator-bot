@@ -1,6 +1,6 @@
 import { classes, factions } from "../constants/constants";
 import { capitalize } from "./prototypes/string";
-import CommandError from "../errors/CommandError";
+import { CommandError } from "../classes/errors"
 
 /*
  * Basic validation
