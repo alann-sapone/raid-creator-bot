@@ -9,7 +9,7 @@ import { add } from "../store/actions/raidActions";
 
 const Discord = require("discord.js");
 
-export default class RaidService extends BaseService{
+export default class CalendarService extends BaseService{
 
   designEvent = async (sentMessage, author, event, profile) => {
     const authorAvatar = author.avatar
@@ -48,7 +48,7 @@ export default class RaidService extends BaseService{
     await sentMessage.react("👍");
   };
 
-  create = async (params, msgEvent, commands, config, botClient) => {
+  add = async (params, msgEvent, commands, config, botClient) => {
     const [name, description, date, hour, profilId] = params;
 
     const { id: guildId } = msgEvent.guild;
@@ -94,13 +94,10 @@ export default class RaidService extends BaseService{
 
   getEventInterface = () => ({
     message: {
-      create: {
-        callback: this.create,
-        description: "Create a new event",
+      add: {
+        callback: this.add,
+        description: "Add a new calendar event",
         params: [{
-          name: "eventName",
-          optional: false,
-        }, {
           name: "description",
           optional: false,
         }, {
@@ -110,7 +107,7 @@ export default class RaidService extends BaseService{
           name: "hour",
           optional: false,
         }, {
-          name: "profile",
+          name: "roster",
           optional: false,
         }],
       },

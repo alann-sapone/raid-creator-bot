@@ -4,17 +4,17 @@ import { createTree } from "../helpers/prototypes/objects";
 import CharacterService from "./CharacterService";
 import ConfigService from "./ConfigService";
 import HelpService from "./HelpService";
-import RaidService from "./RaidService";
+import CalendarService from "./CalendarService";
 import RosterService from "./RosterService";
 import EventService from "./EventService";
 
 const services = {
-  character: new CharacterService(),
-  config: new ConfigService(),
   help: new HelpService(),
-  raid: new RaidService(),
+  config: new ConfigService(),
+  character: new CharacterService(),
   roster: new RosterService(),
-  event: new EventService()
+  event: new EventService(),
+  calendar: new CalendarService(),
 };
 
 // Connect services to events
