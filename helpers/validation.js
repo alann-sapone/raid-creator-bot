@@ -1,4 +1,4 @@
-import { classes, factions } from "../constant";
+import { classes, factions } from "../constants/constants";
 import { capitalize } from "./prototypes/string";
 import CommandError from "../errors/CommandError";
 

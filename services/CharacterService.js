@@ -12,8 +12,7 @@ import { characterValidators, basicValidators } from "../helpers/validation";
 import { characterFormater } from "../helpers/formaters/characterFormater";
 
 // Constants
-import { classes, factions } from "../constant";
-import { archetypeFilter } from "../constants/archetypes";
+import { classes, factions, archetypeFilter } from "../constants/constants";
 
 // Store
 import store from "../store/store";

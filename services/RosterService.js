@@ -5,7 +5,7 @@ import { askMany, ask, askYesNo } from "../helpers/discussion";
 import { characterValidators, basicValidators } from "../helpers/validation";
 
 // Constants
-import { classes, factions, roles } from "../constant";
+import { classes, factions, roles } from "../constants/constants";
 
 // Store
 import store from "../store/store";

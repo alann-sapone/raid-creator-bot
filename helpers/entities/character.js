@@ -1,5 +1,5 @@
 // Archetypes
-import archetypes from "../../constants/archetypes";
+import { archetypes } from "../../constants/constants";
 
 // Store
 import store from "../../store/store";

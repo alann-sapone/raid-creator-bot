@@ -1,20 +1,45 @@
-// Constants
-import {
-  classes,
-  roles,
-  position,
-  damageType
-} from "../constant";
-
-// Character archetypes definitions
+// Classes
 import Archetype from "../classes/characters/Archetype";
 
+export const factions = {
+  HORDE: "Horde",
+  ALLIANCE: "Alliance"
+};
+
+export const roles = {
+  TANK: "Tank",
+  HEALER: "Healer",
+  DAMAGE_DEALER: "Damage Dealer"
+};
+
+export const position = {
+  MELEE: "Melee",
+  RANGED: "Ranged"
+}
+
+export const damageType = {
+  PHYSICAL: "Physical",
+  MAGICAL: "Magical",
+  HYBRID: "Hybrid"
+}
+
+export const classes = {
+  WARRIOR: "Warrior",
+  ROGUE: "Rogue",
+  HUNTER: "Hunter",
+  MAGE: "Mage",
+  WARLOCK: "Warlock",
+  PRIEST: "Priest",
+  SHAMAN: "Shaman",
+  PALADIN: "Paladin",
+  DRUID: "Druid"
+};
 
 /*
  * Archetypes
  */
 
-const archetypesDefinitions = [
+export const archetypes = [
   // Warrior
   new Archetype(classes.WARRIOR, "Arms", roles.DAMAGE_DEALER, position.MELEE, damageType.PHYSICAL),
   new Archetype(classes.WARRIOR, "Fury", roles.DAMAGE_DEALER, position.MELEE, damageType.PHYSICAL),
@@ -62,11 +87,10 @@ const archetypesDefinitions = [
   new Archetype(classes.DRUID, "Restoration", roles.HEALER, position.MELEE, damageType.MAGICAL),
 ];
 
-export default archetypesDefinitions;
 export const archetypeFilter = {
-  getFromClass: (cClass) => archetypesDefinitions.filter(archetype => archetype.getClass() === cClass),
-  getFromRole: (role) => archetypesDefinitions.filter(archetype => archetype.getRoles() === role),
-  getFromPosition: (position) => archetypesDefinitions.filter(archetype => archetype.getPosition() === position),
-  getFromDamageType: (damageType) => archetypesDefinitions.filter(archetype => archetype.getDamageType() === damageType),
-  getFromSpecialisation: (specialisation) => archetypesDefinitions.filter(archetype => archetype.getSpecialisation() === specialisation),
+  getFromClass: (cClass) => archetypes.filter(archetype => archetype.getClass() === cClass),
+  getFromRole: (role) => archetypes.filter(archetype => archetype.getRoles() === role),
+  getFromPosition: (position) => archetypes.filter(archetype => archetype.getPosition() === position),
+  getFromDamageType: (damageType) => archetypes.filter(archetype => archetype.getDamageType() === damageType),
+  getFromSpecialisation: (specialisation) => archetypes.filter(archetype => archetype.getSpecialisation() === specialisation),
 }

@@ -1,5 +1,5 @@
 // Constants
-import { classes, factions } from "../../constant";
+import { classes, factions } from "../../constants/constants";
 
 // Store
 import store from "../../store/store";
